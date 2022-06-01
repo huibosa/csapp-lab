@@ -42,21 +42,18 @@ typedef struct {
 
 void usage(void);
 void printMessage(void);
-void parseFlag(int, char*[]);
-void parseFile(Cache*, Cache*);
+char* parseFlag(int argc, char* argv[], Cache* cache);
+void parseFile(char* infile, MemAccess** acss);
 void parseLine(char* line, MemAccess* acs);
 
-int S, E, B, t, C, m = (1 << 6);
 int verbose;
-char* infile;
-Cache dcache;
 
 int main(int argc, char* argv[]) {
-  Cache dcache, icache;
+  Cache cache;
+  MemAccess** acss = NULL;
 
-  // Get s, S, b, B, E, t
-  parseFlag(argc, argv);
-  parseFile(&dcache, &icache);
+  char* infile = parseFlag(argc, argv, &cache);
+  parseFile(infile, acss);
 
   return 0;
 }
@@ -73,7 +70,7 @@ int main(int argc, char* argv[]) {
 // "M" a data modify (i.e., a data load followed by a data store).
 //
 ////////////////////////////////////////////////////////////////////
-void parseFile(Cache* dcache, Cache* icache) {
+void parseFile(char* infile, MemAccess** acss) {
   FILE* fp;
   char buf[LINELEN];
   MemAccess acs;
@@ -169,9 +166,8 @@ void parseLine(char* line, MemAccess* acs) {
 // * -t <tracefile>: Name of the valgrind trace to replay
 //
 ///////////////////////////////////////////////////////////////////////
-void parseFlag(int argc, char* argv[]) {
-  int acc = m;  // store temporary value for t = m - s - b
-  int s, b;     // number of set bit and block bit
+char* parseFlag(int argc, char* argv[], Cache* cache) {
+  char* infile;
 
   for (int i = 1; i < argc && argv[i][0] == '-'; i++) {
     switch (argv[i][1]) {
@@ -182,19 +178,17 @@ void parseFlag(int argc, char* argv[]) {
         verbose = 1;
       case 's':
         i++;
-        s = atoi(argv[i]);
-        acc -= s;       // acc = m - s
-        S = pow(2, s);  // S = 2 ^ s
+        cache->s = atoi(argv[i]);
+        cache->S = pow(2, cache->s);  // S = 2 ^ s
         break;
       case 'E':
         i++;
-        E = atoi(argv[i]);
+        cache->E = atoi(argv[i]);
         break;
       case 'b':
         i++;
-        b = atoi(argv[i]);
-        acc -= b;       // acc = m - s - b
-        B = pow(2, b);  // B = 2 ^ b
+        cache->b = atoi(argv[i]);
+        cache->B = pow(2, cache->b);  // B = 2 ^ b
         break;
       case 't':
         i++;
@@ -206,17 +200,21 @@ void parseFlag(int argc, char* argv[]) {
     }
   }
 
-  t = acc;  // t = m - s - b
+  cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
+  cache->m = (1 << 6);                        // 64 bit address
+  cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
+
+  return infile;
 }
 
-void printMessage(void) {
-  printf("%-20s %10d\n", "Cache size:", C);
-  printf("%-20s %10d\n", "Set number:", S);
-  printf("%-20s %10d\n", "Set line Number:", E);
-  printf("%-20s %10d\n", "Block size:", B);
-  printf("%-20s %10d\n", "Tag bit number:", t);
-  printf("%-20s %10s\n", "File name:", infile);
-}
+/* void printMessage(void) { */
+/*   printf("%-20s %10d\n", "Cache size:", C); */
+/*   printf("%-20s %10d\n", "Set number:", S); */
+/*   printf("%-20s %10d\n", "Set line Number:", E); */
+/*   printf("%-20s %10d\n", "Block size:", B); */
+/*   printf("%-20s %10d\n", "Tag bit number:", t); */
+/*   printf("%-20s %10s\n", "File name:", infile); */
+/* } */
 
 void usage(void) {
   printf(
