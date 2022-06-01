@@ -6,6 +6,7 @@
 #include "cachelab.h"
 
 #define LINELEN 100
+#define ADDRLEN 16
 
 typedef char byte;
 
@@ -23,7 +24,7 @@ typedef struct {
 
 typedef struct {
   int C, S, E, B, m, t, s, b;
-  int numSet;
+  int size;
   Set* set;
 } Cache;
 
@@ -36,14 +37,14 @@ typedef enum {
 
 typedef struct {
   option opt;
-  char addr[9];
+  char addr[ADDRLEN + 1];
   int size;
 } MemAccess;
 
 void usage(void);
-void printMessage(void);
+void printCache(Cache* cache);
 char* parseFlag(int argc, char* argv[], Cache* cache);
-void parseFile(char* infile);
+void parseFile(char* infile, Cache* cache);
 void parseLine(char* line, MemAccess* acs);
 
 int verbose;
@@ -52,7 +53,8 @@ int main(int argc, char* argv[]) {
   Cache cache;
 
   char* infile = parseFlag(argc, argv, &cache);
-  parseFile(infile);
+  printCache(&cache);
+  parseFile(infile, &cache);
 
   return 0;
 }
@@ -69,7 +71,7 @@ int main(int argc, char* argv[]) {
 // "M" a data modify (i.e., a data load followed by a data store).
 //
 ////////////////////////////////////////////////////////////////////
-void parseFile(char* infile) {
+void parseFile(char* infile, Cache* cache) {
   FILE* fp;
   char buf[LINELEN];
   MemAccess acs;
@@ -82,6 +84,7 @@ void parseFile(char* infile) {
   while (fgets(buf, LINELEN, fp) != NULL) {
     parseLine(buf, &acs);
     printf("%d, %s, %d\n", acs.opt, acs.addr, acs.size);
+    // Line* line = (Line*)malloc(sizeof(Line));
   }
 
   if (fclose(fp) != 0) {
@@ -127,15 +130,15 @@ void parseLine(char* line, MemAccess* acs) {
   }
 
   /* Parse target address */
-  if (addrSize > 8) {
+  if (addrSize > ADDRLEN) {
     // Discard redundant byte
     char* p = addrBegin;
-    p += addrSize - 8;
+    p += addrSize - ADDRLEN;
     strncpy(acs->addr, p, addrSize);
-  } else if (addrSize < 8) {
+  } else if (addrSize < ADDRLEN) {
     // Pad empty space with '0'
     int p;
-    for (p = 0; p < 8 - addrSize; p++) {
+    for (p = 0; p < ADDRLEN - addrSize; p++) {
       acs->addr[p] = '0';
     }
     strncpy(acs->addr + p, addrBegin, addrSize);
@@ -143,7 +146,7 @@ void parseLine(char* line, MemAccess* acs) {
     strncpy(acs->addr, addrBegin, addrSize);
   }
 
-  acs->addr[8] = '\0';  // Pad address with '\0' to create string
+  acs->addr[ADDRLEN] = '\0';  // Pad address with '\0' to create string
 
   /* Parse allocated size */
   char* p;
@@ -174,6 +177,7 @@ char* parseFlag(int argc, char* argv[], Cache* cache) {
         exit(EXIT_SUCCESS);
       case 'v':
         verbose = 1;
+        break;
       case 's':
         i++;
         cache->s = atoi(argv[i]);
@@ -205,14 +209,13 @@ char* parseFlag(int argc, char* argv[], Cache* cache) {
   return infile;
 }
 
-/* void printMessage(void) { */
-/*   printf("%-20s %10d\n", "Cache size:", C); */
-/*   printf("%-20s %10d\n", "Set number:", S); */
-/*   printf("%-20s %10d\n", "Set line Number:", E); */
-/*   printf("%-20s %10d\n", "Block size:", B); */
-/*   printf("%-20s %10d\n", "Tag bit number:", t); */
-/*   printf("%-20s %10s\n", "File name:", infile); */
-/* } */
+void printCache(Cache* cache) {
+  printf("%-30s %10d\n", "Cache size (C):", cache->C);
+  printf("%-30s %10d\n", "Number of sets (S):", cache->B);
+  printf("%-30s %10d\n", "Number of set lines (E):", cache->E);
+  printf("%-30s %10d\n", "Block size (B):", cache->B);
+  printf("%-30s %10d\n", "Number of tag bits (t):", cache->t);
+}
 
 void usage(void) {
   printf(
