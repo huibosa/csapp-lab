@@ -18,12 +18,12 @@ typedef struct {
 typedef struct {
   Line* line;
   int sz;
-  int cap;
+  int numLine;
 } Set;
 
 typedef struct {
   int C, S, E, B, m, t, s, b;
-  int setSize;
+  int numSet;
   Set* set;
 } Cache;
 
@@ -43,17 +43,16 @@ typedef struct {
 void usage(void);
 void printMessage(void);
 char* parseFlag(int argc, char* argv[], Cache* cache);
-void parseFile(char* infile, MemAccess** acss);
+void parseFile(char* infile);
 void parseLine(char* line, MemAccess* acs);
 
 int verbose;
 
 int main(int argc, char* argv[]) {
   Cache cache;
-  MemAccess** acss = NULL;
 
   char* infile = parseFlag(argc, argv, &cache);
-  parseFile(infile, acss);
+  parseFile(infile);
 
   return 0;
 }
@@ -70,7 +69,7 @@ int main(int argc, char* argv[]) {
 // "M" a data modify (i.e., a data load followed by a data store).
 //
 ////////////////////////////////////////////////////////////////////
-void parseFile(char* infile, MemAccess** acss) {
+void parseFile(char* infile) {
   FILE* fp;
   char buf[LINELEN];
   MemAccess acs;
@@ -85,7 +84,6 @@ void parseFile(char* infile, MemAccess** acss) {
     printf("%d, %s, %d\n", acs.opt, acs.addr, acs.size);
   }
 
-  // free(buffer);
   if (fclose(fp) != 0) {
     fprintf(stderr, "Error in closing \"%s\"\n", infile);
   }
