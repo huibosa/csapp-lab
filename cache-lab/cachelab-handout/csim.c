@@ -7,6 +7,7 @@
 
 #define LINELEN 100
 #define ADDRLEN 16
+#define ADDRBITS (1 << 6)
 
 typedef char byte;
 
@@ -33,6 +34,9 @@ typedef struct {
 
 typedef struct {
   int C, S, E, B, m, t, s, b;
+  int hit;
+  int miss;
+  int eviction;
   int size;
   Set* set;
 } Cache;
@@ -50,7 +54,6 @@ typedef struct {
   int size;
 } MemAccess;
 
-
 void usage(void);
 void parseFlag(int argc, char* argv[]);
 void run();
@@ -63,17 +66,34 @@ void printMemAccess(MemAccess* acs);
 CmdOpts opts;
 
 int main(int argc, char* argv[]) {
-  Cache cache;
-
   parseFlag(argc, argv);
-  buildCache(&cache);
-  printCache(&cache);
-  parseFile(opts.infile, &cache);
+  run();
 
   return 0;
 }
 
+void run() {
+  Cache cache;
+
+  buildCache(&cache);
+  // printCache(&cache);
+  parseFile(opts.infile, &cache);
+}
+
+///////////////////////////////////////////////////////////////////////
+//
+// * cache.h: Optional help flag that prints usage info
+// * cache.s <s>: Number of set index bits (S = 2s is the number of sets)
+// * cache.E <E>: Associativity (number of lines per set)
+// * cache.b <b>: Number of block bits (B = 2b is the block size)
+// * cache.t <t>: Number of tab bits (t = m - s - b)
+//
+///////////////////////////////////////////////////////////////////////
 void buildCache(Cache* cache) {
+  cache->hit = 0;
+  cache->miss = 0;
+  cache->eviction = 0;
+
   cache->s = opts.s;
   cache->E = opts.E;
   cache->b = opts.b;
@@ -82,7 +102,7 @@ void buildCache(Cache* cache) {
   cache->S = pow(2, cache->s);
 
   cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
-  cache->m = (1 << 6);                        // 64 bit address
+  cache->m = ADDRBITS;                        // 64 bit address
   cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
 }
 
@@ -196,9 +216,12 @@ void parseLine(char* line, MemAccess* acs) {
 ///////////////////////////////////////////////////////////////////////
 void parseFlag(int argc, char* argv[]) {
   for (int i = 1; i < argc && argv[i][0] == '-'; i++) {
+    // TODO:
     switch (argv[i][1]) {
       case 'h':
         opts.help = 1;
+        usage();
+        exit(0);
         break;
       case 'v':
         opts.verbose = 1;
