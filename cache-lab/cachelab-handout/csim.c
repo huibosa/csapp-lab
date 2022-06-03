@@ -50,30 +50,33 @@ typedef struct {
   int size;
 } MemAccess;
 
+
 void usage(void);
-void parseFlag(int argc, char* argv[], CmdOpts* opt);
+void parseFlag(int argc, char* argv[]);
+void run();
 void parseFile(char* infile, Cache* cache);
 void parseLine(char* line, MemAccess* acs);
-void buildCache(Cache* cache, CmdOpts* opt);
+void buildCache(Cache* cache);
 void printCache(Cache* cache);
 void printMemAccess(MemAccess* acs);
 
+CmdOpts opts;
+
 int main(int argc, char* argv[]) {
   Cache cache;
-  CmdOpts opt;
 
-  parseFlag(argc, argv, &opt);
-  buildCache(&cache, &opt);
+  parseFlag(argc, argv);
+  buildCache(&cache);
   printCache(&cache);
-  parseFile(opt.infile, &cache);
+  parseFile(opts.infile, &cache);
 
   return 0;
 }
 
-void buildCache(Cache* cache, CmdOpts* opt) {
-  cache->s = opt->s;
-  cache->E = opt->E;
-  cache->b = opt->b;
+void buildCache(Cache* cache) {
+  cache->s = opts.s;
+  cache->E = opts.E;
+  cache->b = opts.b;
 
   cache->B = pow(2, cache->b);
   cache->S = pow(2, cache->s);
@@ -191,30 +194,30 @@ void parseLine(char* line, MemAccess* acs) {
 // * -t <tracefile>: Name of the valgrind trace to replay
 //
 ///////////////////////////////////////////////////////////////////////
-void parseFlag(int argc, char* argv[], CmdOpts* opt) {
+void parseFlag(int argc, char* argv[]) {
   for (int i = 1; i < argc && argv[i][0] == '-'; i++) {
     switch (argv[i][1]) {
       case 'h':
-        opt->help = 1;
+        opts.help = 1;
         break;
       case 'v':
-        opt->verbose = 1;
+        opts.verbose = 1;
         break;
       case 's':
         i++;
-        opt->s = atoi(argv[i]);
+        opts.s = atoi(argv[i]);
         break;
       case 'E':
         i++;
-        opt->E = atoi(argv[i]);
+        opts.E = atoi(argv[i]);
         break;
       case 'b':
         i++;
-        opt->b = atoi(argv[i]);
+        opts.b = atoi(argv[i]);
         break;
       case 't':
         i++;
-        opt->infile = argv[i];
+        opts.infile = argv[i];
         break;
       default:
         puts("Undefined flag.");
@@ -223,11 +226,6 @@ void parseFlag(int argc, char* argv[], CmdOpts* opt) {
 }
 
 void printCache(Cache* cache) {
-  // printf("%-30s %10d\n", "Cache size (C):", cache->C);
-  // printf("%-30s %10d\n", "Number of sets (S):", cache->B);
-  // printf("%-30s %10d\n", "Number of set lines (E):", cache->E);
-  // printf("%-30s %10d\n", "Block size (B):", cache->B);
-  // printf("%-30s %10d\n", "Number of tag bits (t):", cache->t);
   printf("(S, E, B, m) = (%d, %d, %d, %d)\n", cache->S, cache->E, cache->B,
          cache->m);
 }
