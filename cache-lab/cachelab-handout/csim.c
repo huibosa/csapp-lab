@@ -11,6 +11,15 @@
 typedef char byte;
 
 typedef struct {
+  int help;
+  int verbose;
+  int s;
+  int E;
+  int b;
+  char* infile;
+} CmdOpts;
+
+typedef struct {
   int valid;
   int tag;
   byte* block;
@@ -42,21 +51,36 @@ typedef struct {
 } MemAccess;
 
 void usage(void);
-void printCache(Cache* cache);
-char* parseFlag(int argc, char* argv[], Cache* cache);
+void parseFlag(int argc, char* argv[], CmdOpts* opt);
 void parseFile(char* infile, Cache* cache);
 void parseLine(char* line, MemAccess* acs);
-
-int verbose;
+void buildCache(Cache* cache, CmdOpts* opt);
+void printCache(Cache* cache);
+void printMemAccess(MemAccess* acs);
 
 int main(int argc, char* argv[]) {
   Cache cache;
+  CmdOpts opt;
 
-  char* infile = parseFlag(argc, argv, &cache);
+  parseFlag(argc, argv, &opt);
+  buildCache(&cache, &opt);
   printCache(&cache);
-  parseFile(infile, &cache);
+  parseFile(opt.infile, &cache);
 
   return 0;
+}
+
+void buildCache(Cache* cache, CmdOpts* opt) {
+  cache->s = opt->s;
+  cache->E = opt->E;
+  cache->b = opt->b;
+
+  cache->B = pow(2, cache->b);
+  cache->S = pow(2, cache->s);
+
+  cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
+  cache->m = (1 << 6);                        // 64 bit address
+  cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -83,7 +107,7 @@ void parseFile(char* infile, Cache* cache) {
 
   while (fgets(buf, LINELEN, fp) != NULL) {
     parseLine(buf, &acs);
-    printf("%d, %s, %d\n", acs.opt, acs.addr, acs.size);
+    // printMemAccess(&acs);
     // Line* line = (Line*)malloc(sizeof(Line));
   }
 
@@ -167,54 +191,45 @@ void parseLine(char* line, MemAccess* acs) {
 // * -t <tracefile>: Name of the valgrind trace to replay
 //
 ///////////////////////////////////////////////////////////////////////
-char* parseFlag(int argc, char* argv[], Cache* cache) {
-  char* infile;
-
+void parseFlag(int argc, char* argv[], CmdOpts* opt) {
   for (int i = 1; i < argc && argv[i][0] == '-'; i++) {
     switch (argv[i][1]) {
       case 'h':
-        usage();
-        exit(EXIT_SUCCESS);
+        opt->help = 1;
+        break;
       case 'v':
-        verbose = 1;
+        opt->verbose = 1;
         break;
       case 's':
         i++;
-        cache->s = atoi(argv[i]);
-        cache->S = pow(2, cache->s);  // S = 2 ^ s
+        opt->s = atoi(argv[i]);
         break;
       case 'E':
         i++;
-        cache->E = atoi(argv[i]);
+        opt->E = atoi(argv[i]);
         break;
       case 'b':
         i++;
-        cache->b = atoi(argv[i]);
-        cache->B = pow(2, cache->b);  // B = 2 ^ b
+        opt->b = atoi(argv[i]);
         break;
       case 't':
         i++;
-        infile = argv[i];
+        opt->infile = argv[i];
         break;
       default:
         puts("Undefined flag.");
-        exit(EXIT_FAILURE);
     }
   }
-
-  cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
-  cache->m = (1 << 6);                        // 64 bit address
-  cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
-
-  return infile;
 }
 
 void printCache(Cache* cache) {
-  printf("%-30s %10d\n", "Cache size (C):", cache->C);
-  printf("%-30s %10d\n", "Number of sets (S):", cache->B);
-  printf("%-30s %10d\n", "Number of set lines (E):", cache->E);
-  printf("%-30s %10d\n", "Block size (B):", cache->B);
-  printf("%-30s %10d\n", "Number of tag bits (t):", cache->t);
+  // printf("%-30s %10d\n", "Cache size (C):", cache->C);
+  // printf("%-30s %10d\n", "Number of sets (S):", cache->B);
+  // printf("%-30s %10d\n", "Number of set lines (E):", cache->E);
+  // printf("%-30s %10d\n", "Block size (B):", cache->B);
+  // printf("%-30s %10d\n", "Number of tag bits (t):", cache->t);
+  printf("(S, E, B, m) = (%d, %d, %d, %d)\n", cache->S, cache->E, cache->B,
+         cache->m);
 }
 
 void usage(void) {
@@ -230,4 +245,8 @@ void usage(void) {
       "Examples:\n"
       "  linux>  ./csim -s 4 -E 1 -b 4 -t traces/yi.trace\n"
       "  linux>  ./csim -v -s 8 -E 2 -b 4 -t traces/yi.trace\n");
+}
+
+void printMemAccess(MemAccess* acs) {
+  printf("%d, %s, %d\n", acs->opt, acs->addr, acs->size);
 }
