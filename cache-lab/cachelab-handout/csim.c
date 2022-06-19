@@ -22,9 +22,9 @@ typedef struct {
 } CmdOpts;
 
 typedef struct {
-  unsigned long valid;
   unsigned long tag;
-  unsigned long block;
+  char* block;
+  unsigned short valid : 1;
 } Line;
 
 typedef struct {
@@ -96,7 +96,7 @@ void buildCache(Cache* cache) {
       Line* pline = pset->line + j;
       pline->tag = 0;
       pline->valid = 0;
-      pline->block = 0;
+      pline->block = (char*)malloc(cache->B * sizeof(char));
     }
   }
 }
@@ -107,7 +107,7 @@ void buildCache(Cache* cache) {
 //
 // Form: [space]operation address,size
 //
-// "I" denotes an instruction load;
+// "I" (Ignored) denotes an instruction load;
 // "L" a data load;
 // "S" a data store;
 // "M" a data modify (i.e., a data load followed by a data store).
@@ -133,16 +133,16 @@ void parseFile(char* infile, Cache* cache) {
 
     // Address starts at 4th pos
     unsigned long addr = strtoul(buf + 3, NULL, 16);
-    unsigned long s = SUBBIT(addr, cache->b + 1, cache->s);
-    unsigned long t = SUBBIT(addr, cache->s + 1, cache->m);
+    unsigned long setid = SUBBIT(addr, cache->b + 1, cache->s);
+    unsigned long tagid = SUBBIT(addr, cache->s + 1, cache->m);
 
     int hitFlag = 0;
     Line* victimLine = NULL;
 
-    Set* pset = cache->set + s;           // Set Selection
+    Set* pset = cache->set + setid;       // Set Selection
     for (int i = 0; i < cache->E; i++) {  // Line Matching
       Line* pline = pset->line + i;
-      if (pline->valid == 1 && pline->tag == t) {
+      if (pline->valid == 1 && pline->tag == tagid) {
         hitFlag = 1;  // Cache hit
         break;
       } else if (pline->valid == 0) {
@@ -153,12 +153,12 @@ void parseFile(char* infile, Cache* cache) {
     if (hitFlag) {
       cache->numHits++;
     } else if (victimLine != NULL) {  // Empty line exists
-      victimLine->tag = t;
+      victimLine->tag = tagid;
       victimLine->valid = 1;
       cache->numMisses++;
     } else {  // Randomly choose victimLine
       victimLine = pset->line + rand() % cache->E;
-      victimLine->tag = t;
+      victimLine->tag = tagid;
       cache->numMisses++;
     }
   }
@@ -170,75 +170,11 @@ void parseFile(char* infile, Cache* cache) {
 
 void freeCache(Cache* cache) {
   for (int i = 0; i < cache->S; i++) {
+    free(cache->set[i].line->block);
     free(cache->set[i].line);
   }
   free(cache->set);
 }
-
-////////////////////////////////////////////////////////////////
-////
-//// acs.opt: iload, dload, store, modify
-//// acs.addr: target address
-//// acs.size: allocated size
-////
-////////////////////////////////////////////////////////////////
-// void parseLine(char* line, MemAccess* acs) {
-//   // NOTE: trailing spaces
-//   char* const tokenSpace = strrchr(line, ' ');
-//   char* const tokenComma = strrchr(line, ',');
-
-//  char* const addrBegin = tokenSpace + 1;
-//  char* const addrEnd = tokenComma;
-//  const int addrSize = addrEnd - addrBegin;
-
-//  char* const sizeBegin = tokenComma + 1;
-
-//  /* Parse option */
-//  if (line[0] == 'I') {
-//    acs->opt = iload;
-//  } else if (line[0] == ' ') {
-//    switch (line[1]) {
-//      case 'L':
-//        acs->opt = dload;
-//        break;
-//      case 'S':
-//        acs->opt = store;
-//        break;
-//      case 'M':
-//        acs->opt = modify;
-//        break;
-//      default:
-//        fprintf(stderr, "Error parsing file: No \"%c\" option\n", line[1]);
-//    }
-//  }
-
-//  /* Parse target address */
-//  if (addrSize > ADDRLEN) {
-//    // Discard redundant byte
-//    char* p = addrBegin;
-//    p += addrSize - ADDRLEN;
-//    strncpy(acs->addr, p, addrSize);
-//  } else if (addrSize < ADDRLEN) {
-//    // Pad empty space with '0'
-//    int p;
-//    for (p = 0; p < ADDRLEN - addrSize; p++) {
-//      acs->addr[p] = '0';
-//    }
-//    strncpy(acs->addr + p, addrBegin, addrSize);
-//  } else {
-//    strncpy(acs->addr, addrBegin, addrSize);
-//  }
-
-//  acs->addr[ADDRLEN] = '\0';  // Pad address with '\0' to create string
-
-//  /* Parse allocated size */
-//  char* p;
-//  for (p = addrBegin; *p != '\n'; p++) {
-//    continue;
-//  }
-//  *p = '\0';
-//  acs->size = atoi(sizeBegin);
-//}
 
 ///////////////////////////////////////////////////////////////////////
 //
