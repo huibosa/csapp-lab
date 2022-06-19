@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "cachelab.h"
 
 #define LINELEN 100
 #define ADDRLEN 16
 #define ADDRBITS (1 << 6)
+#define LASTBIT(k, n) ((k) & ((1 << (n)) - 1))
+#define SUBBIT(k, m, n) LASTBIT((k) >> (m), ((n) - (m)))
 
 typedef struct {
   int help;
@@ -19,9 +22,9 @@ typedef struct {
 } CmdOpts;
 
 typedef struct {
-  int valid;
-  int tag;
-  int block;
+  unsigned long valid;
+  unsigned long tag;
+  unsigned long block;
 } Line;
 
 typedef struct {
@@ -33,17 +36,8 @@ typedef struct {
   int numHits;
   int numMisses;
   int numEvictions;
-  unsigned long setMask;
-  unsigned long tagMask;
   Set* set;
 } Cache;
-
-typedef struct {
-  unsigned long val;
-  int tag;
-  int set;
-  int offset;
-} Address;
 
 void usage(void);
 void parseFlag(int argc, char* argv[]);
@@ -60,6 +54,7 @@ int main(int argc, char* argv[]) {
   parseFlag(argc, argv);
   buildCache(&cache);
   parseFile(opts.infile, &cache);
+  printCache(&cache);
   freeCache(&cache);
 
   return 0;
@@ -74,8 +69,6 @@ int main(int argc, char* argv[]) {
 //
 ///////////////////////////////////////////////////////////////////////
 void buildCache(Cache* cache) {
-  int mask;
-
   cache->numHits = 0;
   cache->numMisses = 0;
   cache->numEvictions = 0;
@@ -91,25 +84,20 @@ void buildCache(Cache* cache) {
   cache->m = ADDRBITS;                        // 64 bit address
   cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
 
-  // Get set index mask and tag mask
-  mask = 0x1;
-  cache->setMask = 0;
-  cache->tagMask = 0;
-  for (int i = 0; i < cache->b; i++) {
-    mask <<= 1;
-  }
-  for (int i = 0; i < cache->s; i++) {
-    cache->setMask |= mask;
-    mask <<= 1;
-  }
-  for (int i = 0; i < cache->t; i++) {
-    cache->tagMask |= mask;
-    mask <<= 1;
-  }
-
   cache->set = (Set*)malloc(cache->S * sizeof(Set));
   for (Set* p = cache->set; p < cache->set + cache->S; p++) {
     p->line = (Line*)malloc(cache->E * sizeof(Line));
+  }
+
+  // Init lines
+  for (int i = 0; i < cache->S; i++) {
+    Set* pset = cache->set + i;
+    for (int j = 0; j < cache->E; j++) {
+      Line* pline = pset->line + j;
+      pline->tag = 0;
+      pline->valid = 0;
+      pline->block = 0;
+    }
   }
 }
 
@@ -128,15 +116,13 @@ void buildCache(Cache* cache) {
 void parseFile(char* infile, Cache* cache) {
   FILE* fp;
   char buf[LINELEN];
-  // Address addr;
-  unsigned long addr;
-  unsigned long tag;
-  unsigned long s;  // Set index
 
   if ((fp = (fopen(infile, "r"))) == NULL) {
     fprintf(stderr, "Can't open file \"%s\"", infile);
     exit(EXIT_FAILURE);
   }
+
+  srand(time(NULL));
 
   // Parse line
   while (fgets(buf, LINELEN, fp) != NULL) {
@@ -145,8 +131,36 @@ void parseFile(char* infile, Cache* cache) {
       continue;
     }
 
-    addr = strtoul(buf + 3, NULL, 16);  // Address starts at 4th
-    s = addr | cache->setMask;          // Get set bits
+    // Address starts at 4th pos
+    unsigned long addr = strtoul(buf + 3, NULL, 16);
+    unsigned long s = SUBBIT(addr, cache->b + 1, cache->s);
+    unsigned long t = SUBBIT(addr, cache->s + 1, cache->m);
+
+    int hitFlag = 0;
+    Line* victimLine = NULL;
+
+    Set* pset = cache->set + s;           // Set Selection
+    for (int i = 0; i < cache->E; i++) {  // Line Matching
+      Line* pline = pset->line + i;
+      if (pline->valid == 1 && pline->tag == t) {
+        hitFlag = 1;  // Cache hit
+        break;
+      } else if (pline->valid == 0) {
+        victimLine = pline;
+      }
+    }
+
+    if (hitFlag) {
+      cache->numHits++;
+    } else if (victimLine != NULL) {  // Empty line exists
+      victimLine->tag = t;
+      victimLine->valid = 1;
+      cache->numMisses++;
+    } else {  // Randomly choose victimLine
+      victimLine = pset->line + rand() % cache->E;
+      victimLine->tag = t;
+      cache->numMisses++;
+    }
   }
 
   if (fclose(fp) != 0) {
@@ -273,6 +287,8 @@ void parseFlag(int argc, char* argv[]) {
 void printCache(Cache* cache) {
   printf("(S, E, B, m) = (%d, %d, %d, %d)\n", cache->S, cache->E, cache->B,
          cache->m);
+  printf("Cache hits = %d\n", cache->numHits);
+  printf("Cache misses = %d\n", cache->numMisses);
 }
 
 void usage(void) {

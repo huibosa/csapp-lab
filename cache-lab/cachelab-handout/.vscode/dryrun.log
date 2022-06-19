@@ -1,0 +1,6 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout'
+# Generate a handin tar file each time you compile
+tar -cvf huibosa-handin.tar  csim.c trans.c 
+make: Leaving directory '/home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout'
+ 

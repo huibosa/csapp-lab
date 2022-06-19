@@ -1,0 +1,411 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sun Jun 19 14:35:15 2022
+
+# Variables
+
+# environment
+TMUX_PANE = %21
+# environment
+GDK_BACKEND = x11
+# environment
+LC_ALL = C
+# environment
+NO_AT_BRIDGE = 1
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-ac30e73b-b637-4422-b5f9-8d96a4bf4f61.sock
+# environment
+VSCODE_CWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
+ 
+# environment
+WINDOWPATH = 1
+# environment
+LESS_TERMCAP_me = (B[m
+# environment
+LESS_TERMCAP_mr = [7m
+# default
+MAKE_COMMAND := make
+# environment
+HISTFILE = /home/huibosa/.zsh_history
+# environment
+GOPATH = /home/huibosa/.go
+# environment
+LESS_TERMCAP_ZW = 
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+MAIL = /var/spool/mail/huibosa
+# environment
+OLDPWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_CODE_CACHE_PATH = /home/huibosa/.config/Code/CachedData/30d9c6cd9483b2cc586687151bcbcd635f373630
+# environment
+LANG = C
+# environment
+XAUTHORITY = /home/huibosa/.Xauthority
+# default
+.LOADED := 
+# environment
+LESS_TERMCAP_md = [1m[36m
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# makefile
+MAKEFLAGS = pqrR
+# environment
+LESS_TERMCAP_ZN = 
+# environment
+BACKUP = /backup
+# environment
+LESS_TERMCAP_so = [1m[33m[44m
+# makefile
+CURDIR := /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+LESS_TERMCAP_ue = [24m(B[m
+# environment
+MFLAGS = -pqrR
+# default
+.SHELLFLAGS := -c
+# environment
+HISTSIZE = 10000000
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 98971
+# environment
+XDG_SESSION_TYPE = tty
+# environment
+TMUX = /tmp/tmux-1000/default,9218,0
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+*F = $(notdir $*)
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# makefile
+SHELL = /bin/sh
+# environment
+LESS_TERMCAP_mh = [2m
+# environment
+LESS_TERMCAP_us = [4m[1m[37m
+# default
+MAKECMDGOALS := all
+# environment
+READER = zathura
+# environment
+SHLVL = 6
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+PATH = /usr/local/go/bin:/home/huibosa/.go/bin:/home/huibosa/.scripts:/home/huibosa/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/huibosa/.antigen/bundles/agkozak/zsh-z:/home/huibosa/.antigen/bundles/zsh-users/zsh-autosuggestions:/home/huibosa/.antigen/bundles/zsh-users/zsh-syntax-highlighting
+# environment
+LESS_TERMCAP_se = [27m(B[m
+# default
+MAKEFILES := 
+# environment
+MOTD_SHOWN = pam
+# automatic
+^F = $(notdir $^)
+# environment
+LESS_TERMCAP_mb = [1m[32m
+# environment
+INVOCATION_ID = e327a683f31c4545a12c47e843d4192d
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+PAPER = less
+# environment
+TERM_PROGRAM = tmux
+# automatic
+?F = $(notdir $?)
+# environment
+XDG_SEAT = seat0
+# environment
+LESS_TERMCAP_ZO = 
+# environment
+LS_COLORS = di=34;01:*Makefile=38;5;178:*.ipynb=38;5;208:*.7z=31:*.WARC=31:*.a=31:*.arj=31:*.bz2=31:*.cpio=31:*.gz=31:*.lrz=31:*.lz=31:*.lzma=31:*.lzo=31:*.rar=31:*.s7z=31:*.sz=31:*.tar=31:*.tbz=31:*.tgz=31:*.warc=31:*.xz=31:*.z=31:*.zip=31:*.zipx=31:*.zoo=31:*.zpaq=31:*.zst=31:*.zstd=31:*.zz=31:
+# automatic
++F = $(notdir $+)
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = undefined
+# environment
+TMUX_VERSION_MAJOR = 3
+# environment
+BROWSER = chromium
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+LOGNAME = huibosa
+# environment
+XDG_VTNR = 1
+# makefile
+.DEFAULT_GOAL := all
+# environment
+LESS_TERMCAP_ZV = 
+# environment
+SYSTEMD_EXEC_PID = 2753
+# environment
+SAVEHIST = 10000000
+# environment
+EDITOR = nvim
+# environment
+DISPLAY = :0
+# environment
+GTK_MODULES = canberra-gtk-module
+# environment
+USER = huibosa
+# default
+MAKE_VERSION := 4.3
+# environment
+_ = /usr/bin/make
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# makefile (from 'Makefile', line 6)
+CFLAGS = -g -Wall -Werror -std=c99 -m64
+# environment
+TMUX_VERSION_MINOR = 3
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/huibosa
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-b6aad75a-1.68.1-main.sock
+# environment
+TERM = screen-256color
+# environment
+XDG_SESSION_ID = 1
+# environment
+GOPROXY = https://goproxy.io
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# environment
+VSCODE_CLI = 1
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink guile load
+# makefile (from 'Makefile', line 5)
+CC = gcc
+# environment
+TERM_PROGRAM_VERSION = 3.3a
+# variable set hash-table stats:
+# Load=113/1024=11%, Rehash=0, Collisions=22/147=15%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+ 
+# . (device 2052, inode 416839): 24 files, no impossibilities.
+
+# 24 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+# No implicit rules.
+
+# Files
+
+# Not a target:
+trans.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.687355968
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.677355968
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+cachelab.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.677355968
+#  File has been updated.
+#  Successfully updated.
+
+test-trans: test-trans.c trans.o cachelab.c cachelab.h
+#  Implicit rule search has not been done.
+#  Last modified 2022-06-19 12:10:37.130908218
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 16):
+	$(CC) $(CFLAGS) -o test-trans test-trans.c cachelab.c trans.o 
+
+# Not a target:
+test-trans.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.680689302
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+csim.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 14:30:23.734423554
+#  File has been updated.
+#  Successfully updated.
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 28):
+	rm -rf *.o
+	rm -f *.tar
+	rm -f csim
+	rm -f test-trans tracegen
+	rm -f trace.all trace.f*
+	rm -f .csim_results .marker
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+tracegen: tracegen.c trans.o cachelab.c
+#  Implicit rule search has not been done.
+#  Last modified 2022-06-19 12:10:37.207574886
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 19):
+	$(CC) $(CFLAGS) -O0 -o tracegen tracegen.c trans.o cachelab.c
+
+# Not a target:
+tracegen.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.680689302
+#  File has been updated.
+#  Successfully updated.
+
+all: csim test-trans tracegen
+#  Command line target.
+#  Implicit rule search has not been done.
+#  Implicit/static pattern stem: ''
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := all
+# automatic
+# * := 
+# automatic
+# < := csim
+# automatic
+# + := csim test-trans tracegen
+# automatic
+# % := 
+ 
+# automatic
+# ^ := csim test-trans tracegen
+# automatic
+# ? := csim test-trans tracegen
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/12=17%
+#  recipe to execute (from 'Makefile', line 9):
+	# Generate a handin tar file each time you compile
+	-tar -cvf ${USER}-handin.tar  csim.c trans.c 
+
+# Not a target:
+cachelab.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-19 09:21:02.677355968
+#  File has been updated.
+#  Successfully updated.
+
+trans.o: trans.c
+#  Implicit rule search has not been done.
+#  Last modified 2022-06-19 09:21:02.687355968
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 22):
+	$(CC) $(CFLAGS) -O0 -c trans.c
+
+# Not a target:
+.SUFFIXES:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+csim: csim.c cachelab.c cachelab.h
+#  Implicit rule search has not been done.
+#  Last modified 2022-06-19 14:30:25.577756928
+#  File has been updated.
+#  Successfully updated.
+#  recipe to execute (from 'Makefile', line 13):
+	$(CC) $(CFLAGS) -o csim csim.c cachelab.c -lm 
+
+# files hash-table stats:
+# Load=15/1024=1%, Rehash=0, Collisions=0/45=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 30 / storage = 281 B / avg = 9 B
+# current buf: size = 8162 B / used = 281 B / count = 30 / avg = 9 B
+
+# strcache performance: lookups = 60 / hit rate = 50%
+# hash-table stats:
+# Load=30/8192=0%, Rehash=0, Collisions=0/60=0%
+# Finished Make data base on Sun Jun 19 14:35:15 2022
+
+ 
