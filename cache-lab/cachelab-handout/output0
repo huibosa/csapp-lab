@@ -1,0 +1,529 @@
+malloc(2048) = 0x1ba22a0
+malloc(24) = 0x1ba2ab0
+malloc(24) = 0x1ba2ad0
+malloc(24) = 0x1ba2af0
+malloc(24) = 0x1ba2b10
+malloc(24) = 0x1ba2b30
+malloc(24) = 0x1ba2b50
+malloc(24) = 0x1ba2b70
+malloc(24) = 0x1ba2b90
+malloc(24) = 0x1ba2bb0
+malloc(24) = 0x1ba2bd0
+malloc(24) = 0x1ba2bf0
+malloc(24) = 0x1ba2c10
+malloc(24) = 0x1ba2c30
+malloc(24) = 0x1ba2c50
+malloc(24) = 0x1ba2c70
+malloc(24) = 0x1ba2c90
+malloc(24) = 0x1ba2cb0
+malloc(24) = 0x1ba2cd0
+malloc(24) = 0x1ba2cf0
+malloc(24) = 0x1ba2d10
+malloc(24) = 0x1ba2d30
+malloc(24) = 0x1ba2d50
+malloc(24) = 0x1ba2d70
+malloc(24) = 0x1ba2d90
+malloc(24) = 0x1ba2db0
+malloc(24) = 0x1ba2dd0
+malloc(24) = 0x1ba2df0
+malloc(24) = 0x1ba2e10
+malloc(24) = 0x1ba2e30
+malloc(24) = 0x1ba2e50
+malloc(24) = 0x1ba2e70
+malloc(24) = 0x1ba2e90
+malloc(24) = 0x1ba2eb0
+malloc(24) = 0x1ba2ed0
+malloc(24) = 0x1ba2ef0
+malloc(24) = 0x1ba2f10
+malloc(24) = 0x1ba2f30
+malloc(24) = 0x1ba2f50
+malloc(24) = 0x1ba2f70
+malloc(24) = 0x1ba2f90
+malloc(24) = 0x1ba2fb0
+malloc(24) = 0x1ba2fd0
+malloc(24) = 0x1ba2ff0
+malloc(24) = 0x1ba3010
+malloc(24) = 0x1ba3030
+malloc(24) = 0x1ba3050
+malloc(24) = 0x1ba3070
+malloc(24) = 0x1ba3090
+malloc(24) = 0x1ba30b0
+malloc(24) = 0x1ba30d0
+malloc(24) = 0x1ba30f0
+malloc(24) = 0x1ba3110
+malloc(24) = 0x1ba3130
+malloc(24) = 0x1ba3150
+malloc(24) = 0x1ba3170
+malloc(24) = 0x1ba3190
+malloc(24) = 0x1ba31b0
+malloc(24) = 0x1ba31d0
+malloc(24) = 0x1ba31f0
+malloc(24) = 0x1ba3210
+malloc(24) = 0x1ba3230
+malloc(24) = 0x1ba3250
+malloc(24) = 0x1ba3270
+malloc(24) = 0x1ba3290
+malloc(24) = 0x1ba32b0
+malloc(24) = 0x1ba32d0
+malloc(24) = 0x1ba32f0
+malloc(24) = 0x1ba3310
+malloc(24) = 0x1ba3330
+malloc(24) = 0x1ba3350
+malloc(24) = 0x1ba3370
+malloc(24) = 0x1ba3390
+malloc(24) = 0x1ba33b0
+malloc(24) = 0x1ba33d0
+malloc(24) = 0x1ba33f0
+malloc(24) = 0x1ba3410
+malloc(24) = 0x1ba3430
+malloc(24) = 0x1ba3450
+malloc(24) = 0x1ba3470
+malloc(24) = 0x1ba3490
+malloc(24) = 0x1ba34b0
+malloc(24) = 0x1ba34d0
+malloc(24) = 0x1ba34f0
+malloc(24) = 0x1ba3510
+malloc(24) = 0x1ba3530
+malloc(24) = 0x1ba3550
+malloc(24) = 0x1ba3570
+malloc(24) = 0x1ba3590
+malloc(24) = 0x1ba35b0
+malloc(24) = 0x1ba35d0
+malloc(24) = 0x1ba35f0
+malloc(24) = 0x1ba3610
+malloc(24) = 0x1ba3630
+malloc(24) = 0x1ba3650
+malloc(24) = 0x1ba3670
+malloc(24) = 0x1ba3690
+malloc(24) = 0x1ba36b0
+malloc(24) = 0x1ba36d0
+malloc(24) = 0x1ba36f0
+malloc(24) = 0x1ba3710
+malloc(24) = 0x1ba3730
+malloc(24) = 0x1ba3750
+malloc(24) = 0x1ba3770
+malloc(24) = 0x1ba3790
+malloc(24) = 0x1ba37b0
+malloc(24) = 0x1ba37d0
+malloc(24) = 0x1ba37f0
+malloc(24) = 0x1ba3810
+malloc(24) = 0x1ba3830
+malloc(24) = 0x1ba3850
+malloc(24) = 0x1ba3870
+malloc(24) = 0x1ba3890
+malloc(24) = 0x1ba38b0
+malloc(24) = 0x1ba38d0
+malloc(24) = 0x1ba38f0
+malloc(24) = 0x1ba3910
+malloc(24) = 0x1ba3930
+malloc(24) = 0x1ba3950
+malloc(24) = 0x1ba3970
+malloc(24) = 0x1ba3990
+malloc(24) = 0x1ba39b0
+malloc(24) = 0x1ba39d0
+malloc(24) = 0x1ba39f0
+malloc(24) = 0x1ba3a10
+malloc(24) = 0x1ba3a30
+malloc(24) = 0x1ba3a50
+malloc(24) = 0x1ba3a70
+malloc(24) = 0x1ba3a90
+malloc(24) = 0x1ba3ab0
+malloc(24) = 0x1ba3ad0
+malloc(24) = 0x1ba3af0
+malloc(24) = 0x1ba3b10
+malloc(24) = 0x1ba3b30
+malloc(24) = 0x1ba3b50
+malloc(24) = 0x1ba3b70
+malloc(24) = 0x1ba3b90
+malloc(24) = 0x1ba3bb0
+malloc(24) = 0x1ba3bd0
+malloc(24) = 0x1ba3bf0
+malloc(24) = 0x1ba3c10
+malloc(24) = 0x1ba3c30
+malloc(24) = 0x1ba3c50
+malloc(24) = 0x1ba3c70
+malloc(24) = 0x1ba3c90
+malloc(24) = 0x1ba3cb0
+malloc(24) = 0x1ba3cd0
+malloc(24) = 0x1ba3cf0
+malloc(24) = 0x1ba3d10
+malloc(24) = 0x1ba3d30
+malloc(24) = 0x1ba3d50
+malloc(24) = 0x1ba3d70
+malloc(24) = 0x1ba3d90
+malloc(24) = 0x1ba3db0
+malloc(24) = 0x1ba3dd0
+malloc(24) = 0x1ba3df0
+malloc(24) = 0x1ba3e10
+malloc(24) = 0x1ba3e30
+malloc(24) = 0x1ba3e50
+malloc(24) = 0x1ba3e70
+malloc(24) = 0x1ba3e90
+malloc(24) = 0x1ba3eb0
+malloc(24) = 0x1ba3ed0
+malloc(24) = 0x1ba3ef0
+malloc(24) = 0x1ba3f10
+malloc(24) = 0x1ba3f30
+malloc(24) = 0x1ba3f50
+malloc(24) = 0x1ba3f70
+malloc(24) = 0x1ba3f90
+malloc(24) = 0x1ba3fb0
+malloc(24) = 0x1ba3fd0
+malloc(24) = 0x1ba3ff0
+malloc(24) = 0x1ba4010
+malloc(24) = 0x1ba4030
+malloc(24) = 0x1ba4050
+malloc(24) = 0x1ba4070
+malloc(24) = 0x1ba4090
+malloc(24) = 0x1ba40b0
+malloc(24) = 0x1ba40d0
+malloc(24) = 0x1ba40f0
+malloc(24) = 0x1ba4110
+malloc(24) = 0x1ba4130
+malloc(24) = 0x1ba4150
+malloc(24) = 0x1ba4170
+malloc(24) = 0x1ba4190
+malloc(24) = 0x1ba41b0
+malloc(24) = 0x1ba41d0
+malloc(24) = 0x1ba41f0
+malloc(24) = 0x1ba4210
+malloc(24) = 0x1ba4230
+malloc(24) = 0x1ba4250
+malloc(24) = 0x1ba4270
+malloc(24) = 0x1ba4290
+malloc(24) = 0x1ba42b0
+malloc(24) = 0x1ba42d0
+malloc(24) = 0x1ba42f0
+malloc(24) = 0x1ba4310
+malloc(24) = 0x1ba4330
+malloc(24) = 0x1ba4350
+malloc(24) = 0x1ba4370
+malloc(24) = 0x1ba4390
+malloc(24) = 0x1ba43b0
+malloc(24) = 0x1ba43d0
+malloc(24) = 0x1ba43f0
+malloc(24) = 0x1ba4410
+malloc(24) = 0x1ba4430
+malloc(24) = 0x1ba4450
+malloc(24) = 0x1ba4470
+malloc(24) = 0x1ba4490
+malloc(24) = 0x1ba44b0
+malloc(24) = 0x1ba44d0
+malloc(24) = 0x1ba44f0
+malloc(24) = 0x1ba4510
+malloc(24) = 0x1ba4530
+malloc(24) = 0x1ba4550
+malloc(24) = 0x1ba4570
+malloc(24) = 0x1ba4590
+malloc(24) = 0x1ba45b0
+malloc(24) = 0x1ba45d0
+malloc(24) = 0x1ba45f0
+malloc(24) = 0x1ba4610
+malloc(24) = 0x1ba4630
+malloc(24) = 0x1ba4650
+malloc(24) = 0x1ba4670
+malloc(24) = 0x1ba4690
+malloc(24) = 0x1ba46b0
+malloc(24) = 0x1ba46d0
+malloc(24) = 0x1ba46f0
+malloc(24) = 0x1ba4710
+malloc(24) = 0x1ba4730
+malloc(24) = 0x1ba4750
+malloc(24) = 0x1ba4770
+malloc(24) = 0x1ba4790
+malloc(24) = 0x1ba47b0
+malloc(24) = 0x1ba47d0
+malloc(24) = 0x1ba47f0
+malloc(24) = 0x1ba4810
+malloc(24) = 0x1ba4830
+malloc(24) = 0x1ba4850
+malloc(24) = 0x1ba4870
+malloc(24) = 0x1ba4890
+malloc(24) = 0x1ba48b0
+malloc(24) = 0x1ba48d0
+malloc(24) = 0x1ba48f0
+malloc(24) = 0x1ba4910
+malloc(24) = 0x1ba4930
+malloc(24) = 0x1ba4950
+malloc(24) = 0x1ba4970
+malloc(24) = 0x1ba4990
+malloc(24) = 0x1ba49b0
+malloc(24) = 0x1ba49d0
+malloc(24) = 0x1ba49f0
+malloc(24) = 0x1ba4a10
+malloc(24) = 0x1ba4a30
+malloc(24) = 0x1ba4a50
+malloc(24) = 0x1ba4a70
+malloc(24) = 0x1ba4a90
+malloc(472) = 0x1ba4ab0
+malloc(4096) = 0x1ba4c90
+malloc(4096) = 0x1ba5ca0
+free(0x1ba4c90)
+free(0x1ba4ab0)
+free(0x1ba2ab0)
+free(0x1ba2ad0)
+free(0x1ba2af0)
+free(0x1ba2b10)
+free(0x1ba2b30)
+free(0x1ba2b50)
+free(0x1ba2b70)
+free(0x1ba2b90)
+free(0x1ba2bb0)
+free(0x1ba2bd0)
+free(0x1ba2bf0)
+free(0x1ba2c10)
+free(0x1ba2c30)
+free(0x1ba2c50)
+free(0x1ba2c70)
+free(0x1ba2c90)
+free(0x1ba2cb0)
+free(0x1ba2cd0)
+free(0x1ba2cf0)
+free(0x1ba2d10)
+free(0x1ba2d30)
+free(0x1ba2d50)
+free(0x1ba2d70)
+free(0x1ba2d90)
+free(0x1ba2db0)
+free(0x1ba2dd0)
+free(0x1ba2df0)
+free(0x1ba2e10)
+free(0x1ba2e30)
+free(0x1ba2e50)
+free(0x1ba2e70)
+free(0x1ba2e90)
+free(0x1ba2eb0)
+free(0x1ba2ed0)
+free(0x1ba2ef0)
+free(0x1ba2f10)
+free(0x1ba2f30)
+free(0x1ba2f50)
+free(0x1ba2f70)
+free(0x1ba2f90)
+free(0x1ba2fb0)
+free(0x1ba2fd0)
+free(0x1ba2ff0)
+free(0x1ba3010)
+free(0x1ba3030)
+free(0x1ba3050)
+free(0x1ba3070)
+free(0x1ba3090)
+free(0x1ba30b0)
+free(0x1ba30d0)
+free(0x1ba30f0)
+free(0x1ba3110)
+free(0x1ba3130)
+free(0x1ba3150)
+free(0x1ba3170)
+free(0x1ba3190)
+free(0x1ba31b0)
+free(0x1ba31d0)
+free(0x1ba31f0)
+free(0x1ba3210)
+free(0x1ba3230)
+free(0x1ba3250)
+free(0x1ba3270)
+free(0x1ba3290)
+free(0x1ba32b0)
+free(0x1ba32d0)
+free(0x1ba32f0)
+free(0x1ba3310)
+free(0x1ba3330)
+free(0x1ba3350)
+free(0x1ba3370)
+free(0x1ba3390)
+free(0x1ba33b0)
+free(0x1ba33d0)
+free(0x1ba33f0)
+free(0x1ba3410)
+free(0x1ba3430)
+free(0x1ba3450)
+free(0x1ba3470)
+free(0x1ba3490)
+free(0x1ba34b0)
+free(0x1ba34d0)
+free(0x1ba34f0)
+free(0x1ba3510)
+free(0x1ba3530)
+free(0x1ba3550)
+free(0x1ba3570)
+free(0x1ba3590)
+free(0x1ba35b0)
+free(0x1ba35d0)
+free(0x1ba35f0)
+free(0x1ba3610)
+free(0x1ba3630)
+free(0x1ba3650)
+free(0x1ba3670)
+free(0x1ba3690)
+free(0x1ba36b0)
+free(0x1ba36d0)
+free(0x1ba36f0)
+free(0x1ba3710)
+free(0x1ba3730)
+free(0x1ba3750)
+free(0x1ba3770)
+free(0x1ba3790)
+free(0x1ba37b0)
+free(0x1ba37d0)
+free(0x1ba37f0)
+free(0x1ba3810)
+free(0x1ba3830)
+free(0x1ba3850)
+free(0x1ba3870)
+free(0x1ba3890)
+free(0x1ba38b0)
+free(0x1ba38d0)
+free(0x1ba38f0)
+free(0x1ba3910)
+free(0x1ba3930)
+free(0x1ba3950)
+free(0x1ba3970)
+free(0x1ba3990)
+free(0x1ba39b0)
+free(0x1ba39d0)
+free(0x1ba39f0)
+free(0x1ba3a10)
+free(0x1ba3a30)
+free(0x1ba3a50)
+free(0x1ba3a70)
+free(0x1ba3a90)
+free(0x1ba3ab0)
+free(0x1ba3ad0)
+free(0x1ba3af0)
+free(0x1ba3b10)
+free(0x1ba3b30)
+free(0x1ba3b50)
+free(0x1ba3b70)
+free(0x1ba3b90)
+free(0x1ba3bb0)
+free(0x1ba3bd0)
+free(0x1ba3bf0)
+free(0x1ba3c10)
+free(0x1ba3c30)
+free(0x1ba3c50)
+free(0x1ba3c70)
+free(0x1ba3c90)
+free(0x1ba3cb0)
+free(0x1ba3cd0)
+free(0x1ba3cf0)
+free(0x1ba3d10)
+free(0x1ba3d30)
+free(0x1ba3d50)
+free(0x1ba3d70)
+free(0x1ba3d90)
+free(0x1ba3db0)
+free(0x1ba3dd0)
+free(0x1ba3df0)
+free(0x1ba3e10)
+free(0x1ba3e30)
+free(0x1ba3e50)
+free(0x1ba3e70)
+free(0x1ba3e90)
+free(0x1ba3eb0)
+free(0x1ba3ed0)
+free(0x1ba3ef0)
+free(0x1ba3f10)
+free(0x1ba3f30)
+free(0x1ba3f50)
+free(0x1ba3f70)
+free(0x1ba3f90)
+free(0x1ba3fb0)
+free(0x1ba3fd0)
+free(0x1ba3ff0)
+free(0x1ba4010)
+free(0x1ba4030)
+free(0x1ba4050)
+free(0x1ba4070)
+free(0x1ba4090)
+free(0x1ba40b0)
+free(0x1ba40d0)
+free(0x1ba40f0)
+free(0x1ba4110)
+free(0x1ba4130)
+free(0x1ba4150)
+free(0x1ba4170)
+free(0x1ba4190)
+free(0x1ba41b0)
+free(0x1ba41d0)
+free(0x1ba41f0)
+free(0x1ba4210)
+free(0x1ba4230)
+free(0x1ba4250)
+free(0x1ba4270)
+free(0x1ba4290)
+free(0x1ba42b0)
+free(0x1ba42d0)
+free(0x1ba42f0)
+free(0x1ba4310)
+free(0x1ba4330)
+free(0x1ba4350)
+free(0x1ba4370)
+free(0x1ba4390)
+free(0x1ba43b0)
+free(0x1ba43d0)
+free(0x1ba43f0)
+free(0x1ba4410)
+free(0x1ba4430)
+free(0x1ba4450)
+free(0x1ba4470)
+free(0x1ba4490)
+free(0x1ba44b0)
+free(0x1ba44d0)
+free(0x1ba44f0)
+free(0x1ba4510)
+free(0x1ba4530)
+free(0x1ba4550)
+free(0x1ba4570)
+free(0x1ba4590)
+free(0x1ba45b0)
+free(0x1ba45d0)
+free(0x1ba45f0)
+free(0x1ba4610)
+free(0x1ba4630)
+free(0x1ba4650)
+free(0x1ba4670)
+free(0x1ba4690)
+free(0x1ba46b0)
+free(0x1ba46d0)
+free(0x1ba46f0)
+free(0x1ba4710)
+free(0x1ba4730)
+free(0x1ba4750)
+free(0x1ba4770)
+free(0x1ba4790)
+free(0x1ba47b0)
+free(0x1ba47d0)
+free(0x1ba47f0)
+free(0x1ba4810)
+free(0x1ba4830)
+free(0x1ba4850)
+free(0x1ba4870)
+free(0x1ba4890)
+free(0x1ba48b0)
+free(0x1ba48d0)
+free(0x1ba48f0)
+free(0x1ba4910)
+free(0x1ba4930)
+free(0x1ba4950)
+free(0x1ba4970)
+free(0x1ba4990)
+free(0x1ba49b0)
+free(0x1ba49d0)
+free(0x1ba49f0)
+free(0x1ba4a10)
+free(0x1ba4a30)
+free(0x1ba4a50)
+free(0x1ba4a70)
+free(0x1ba4a90)
+free(0x1ba22a0)
+malloc(472) = 0x1ba4ab0
+malloc(4096) = 0x1ba4c90
+free(0x1ba4c90)
+free(0x1ba4ab0)
+L 10,4 miss 
+S 18,4 hit 
+L 20,4 miss 
+S 28,4 hit 
+S 50,4 miss 
+hits:2 misses:3 evictions:0

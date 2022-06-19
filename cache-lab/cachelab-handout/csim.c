@@ -9,8 +9,6 @@
 #define ADDRLEN 16
 #define ADDRBITS (1 << 6)
 
-typedef char byte;
-
 typedef struct {
   int help;
   int verbose;
@@ -23,66 +21,52 @@ typedef struct {
 typedef struct {
   int valid;
   int tag;
-  byte* block;
+  int block;
 } Line;
 
 typedef struct {
   Line* line;
-  int sz;
-  int numLine;
 } Set;
 
 typedef struct {
   int C, S, E, B, m, t, s, b;
-  int hit;
-  int miss;
-  int eviction;
-  int size;
+  int numHits;
+  int numMisses;
+  int numEvictions;
+  unsigned long setMask;
+  unsigned long tagMask;
   Set* set;
 } Cache;
 
-typedef enum {
-  iload,
-  dload,
-  store,
-  modify,
-} option;
-
 typedef struct {
-  option opt;
-  char addr[ADDRLEN + 1];
-  int size;
-} MemAccess;
+  unsigned long val;
+  int tag;
+  int set;
+  int offset;
+} Address;
 
 void usage(void);
 void parseFlag(int argc, char* argv[]);
-void run();
-void parseFile(char* infile, Cache* cache);
-void parseLine(char* line, MemAccess* acs);
 void buildCache(Cache* cache);
+void freeCache(Cache* cache);
+void parseFile(char* infile, Cache* cache);
 void printCache(Cache* cache);
-void printMemAccess(MemAccess* acs);
 
-CmdOpts opts;
+CmdOpts opts;  // Commmand line options
 
 int main(int argc, char* argv[]) {
+  Cache cache;
+
   parseFlag(argc, argv);
-  run();
+  buildCache(&cache);
+  parseFile(opts.infile, &cache);
+  freeCache(&cache);
 
   return 0;
 }
 
-void run() {
-  Cache cache;
-
-  buildCache(&cache);
-  // printCache(&cache);
-  parseFile(opts.infile, &cache);
-}
-
 ///////////////////////////////////////////////////////////////////////
 //
-// * cache.h: Optional help flag that prints usage info
 // * cache.s <s>: Number of set index bits (S = 2s is the number of sets)
 // * cache.E <E>: Associativity (number of lines per set)
 // * cache.b <b>: Number of block bits (B = 2b is the block size)
@@ -90,9 +74,11 @@ void run() {
 //
 ///////////////////////////////////////////////////////////////////////
 void buildCache(Cache* cache) {
-  cache->hit = 0;
-  cache->miss = 0;
-  cache->eviction = 0;
+  int mask;
+
+  cache->numHits = 0;
+  cache->numMisses = 0;
+  cache->numEvictions = 0;
 
   cache->s = opts.s;
   cache->E = opts.E;
@@ -100,10 +86,31 @@ void buildCache(Cache* cache) {
 
   cache->B = pow(2, cache->b);
   cache->S = pow(2, cache->s);
-
   cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
+
   cache->m = ADDRBITS;                        // 64 bit address
   cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
+
+  // Get set index mask and tag mask
+  mask = 0x1;
+  cache->setMask = 0;
+  cache->tagMask = 0;
+  for (int i = 0; i < cache->b; i++) {
+    mask <<= 1;
+  }
+  for (int i = 0; i < cache->s; i++) {
+    cache->setMask |= mask;
+    mask <<= 1;
+  }
+  for (int i = 0; i < cache->t; i++) {
+    cache->tagMask |= mask;
+    mask <<= 1;
+  }
+
+  cache->set = (Set*)malloc(cache->S * sizeof(Set));
+  for (Set* p = cache->set; p < cache->set + cache->S; p++) {
+    p->line = (Line*)malloc(cache->E * sizeof(Line));
+  }
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -121,17 +128,25 @@ void buildCache(Cache* cache) {
 void parseFile(char* infile, Cache* cache) {
   FILE* fp;
   char buf[LINELEN];
-  MemAccess acs;
+  // Address addr;
+  unsigned long addr;
+  unsigned long tag;
+  unsigned long s;  // Set index
 
   if ((fp = (fopen(infile, "r"))) == NULL) {
     fprintf(stderr, "Can't open file \"%s\"", infile);
     exit(EXIT_FAILURE);
   }
 
+  // Parse line
   while (fgets(buf, LINELEN, fp) != NULL) {
-    parseLine(buf, &acs);
-    // printMemAccess(&acs);
-    // Line* line = (Line*)malloc(sizeof(Line));
+    // Ignore all instruction cache accesses
+    if (buf[0] == 'I') {
+      continue;
+    }
+
+    addr = strtoul(buf + 3, NULL, 16);  // Address starts at 4th
+    s = addr | cache->setMask;          // Get set bits
   }
 
   if (fclose(fp) != 0) {
@@ -139,70 +154,77 @@ void parseFile(char* infile, Cache* cache) {
   }
 }
 
-//////////////////////////////////////////////////////////////
-//
-// acs.opt: iload, dload, store, modify
-// acs.addr: target address
-// acs.size: allocated size
-//
-//////////////////////////////////////////////////////////////
-void parseLine(char* line, MemAccess* acs) {
-  // NOTE: trailing spaces
-  char* const tokenSpace = strrchr(line, ' ');
-  char* const tokenComma = strrchr(line, ',');
-
-  char* const addrBegin = tokenSpace + 1;
-  char* const addrEnd = tokenComma;
-  const int addrSize = addrEnd - addrBegin;
-
-  char* const sizeBegin = tokenComma + 1;
-
-  /* Parse option */
-  if (line[0] == 'I') {
-    acs->opt = iload;
-  } else if (line[0] == ' ') {
-    switch (line[1]) {
-      case 'L':
-        acs->opt = dload;
-        break;
-      case 'S':
-        acs->opt = store;
-        break;
-      case 'M':
-        acs->opt = modify;
-        break;
-      default:
-        fprintf(stderr, "Error parsing file: No \"%c\" option\n", line[1]);
-    }
+void freeCache(Cache* cache) {
+  for (int i = 0; i < cache->S; i++) {
+    free(cache->set[i].line);
   }
-
-  /* Parse target address */
-  if (addrSize > ADDRLEN) {
-    // Discard redundant byte
-    char* p = addrBegin;
-    p += addrSize - ADDRLEN;
-    strncpy(acs->addr, p, addrSize);
-  } else if (addrSize < ADDRLEN) {
-    // Pad empty space with '0'
-    int p;
-    for (p = 0; p < ADDRLEN - addrSize; p++) {
-      acs->addr[p] = '0';
-    }
-    strncpy(acs->addr + p, addrBegin, addrSize);
-  } else {
-    strncpy(acs->addr, addrBegin, addrSize);
-  }
-
-  acs->addr[ADDRLEN] = '\0';  // Pad address with '\0' to create string
-
-  /* Parse allocated size */
-  char* p;
-  for (p = addrBegin; *p != '\n'; p++) {
-    continue;
-  }
-  *p = '\0';
-  acs->size = atoi(sizeBegin);
+  free(cache->set);
 }
+
+////////////////////////////////////////////////////////////////
+////
+//// acs.opt: iload, dload, store, modify
+//// acs.addr: target address
+//// acs.size: allocated size
+////
+////////////////////////////////////////////////////////////////
+// void parseLine(char* line, MemAccess* acs) {
+//   // NOTE: trailing spaces
+//   char* const tokenSpace = strrchr(line, ' ');
+//   char* const tokenComma = strrchr(line, ',');
+
+//  char* const addrBegin = tokenSpace + 1;
+//  char* const addrEnd = tokenComma;
+//  const int addrSize = addrEnd - addrBegin;
+
+//  char* const sizeBegin = tokenComma + 1;
+
+//  /* Parse option */
+//  if (line[0] == 'I') {
+//    acs->opt = iload;
+//  } else if (line[0] == ' ') {
+//    switch (line[1]) {
+//      case 'L':
+//        acs->opt = dload;
+//        break;
+//      case 'S':
+//        acs->opt = store;
+//        break;
+//      case 'M':
+//        acs->opt = modify;
+//        break;
+//      default:
+//        fprintf(stderr, "Error parsing file: No \"%c\" option\n", line[1]);
+//    }
+//  }
+
+//  /* Parse target address */
+//  if (addrSize > ADDRLEN) {
+//    // Discard redundant byte
+//    char* p = addrBegin;
+//    p += addrSize - ADDRLEN;
+//    strncpy(acs->addr, p, addrSize);
+//  } else if (addrSize < ADDRLEN) {
+//    // Pad empty space with '0'
+//    int p;
+//    for (p = 0; p < ADDRLEN - addrSize; p++) {
+//      acs->addr[p] = '0';
+//    }
+//    strncpy(acs->addr + p, addrBegin, addrSize);
+//  } else {
+//    strncpy(acs->addr, addrBegin, addrSize);
+//  }
+
+//  acs->addr[ADDRLEN] = '\0';  // Pad address with '\0' to create string
+
+//  /* Parse allocated size */
+//  char* p;
+//  for (p = addrBegin; *p != '\n'; p++) {
+//    continue;
+//  }
+//  *p = '\0';
+//  acs->size = atoi(sizeBegin);
+//}
 
 ///////////////////////////////////////////////////////////////////////
 //
@@ -266,8 +288,4 @@ void usage(void) {
       "Examples:\n"
       "  linux>  ./csim -s 4 -E 1 -b 4 -t traces/yi.trace\n"
       "  linux>  ./csim -v -s 8 -E 2 -b 4 -t traces/yi.trace\n");
-}
-
-void printMemAccess(MemAccess* acs) {
-  printf("%d, %s, %d\n", acs->opt, acs->addr, acs->size);
 }

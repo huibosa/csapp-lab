@@ -262,8 +262,8 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  int eq = (x & y) | (!x & !y);
-  return 2;
+  // int eq = (x & y) | (!x & !y);
+  // return 2;
 }
 //4
 /* 
