@@ -84,6 +84,8 @@ void app_error(char* msg);
 typedef void handler_t(int);
 handler_t* Signal(int signum, handler_t* handler);
 
+static pid_t Fork();
+
 /*
  * main - The shell's main routine
  */
@@ -160,7 +162,35 @@ int main(int argc, char** argv) {
  * background children don't receive SIGINT (SIGTSTP) from the kernel
  * when we type ctrl-c (ctrl-z) at the keyboard.
  */
-void eval(char* cmdline) { return; }
+void eval(char* cmdline) {
+  char buf[MAXLINE];
+  char* argv[MAXARGS];
+  int bg;
+  pid_t pid;
+
+  strcpy(buf, cmdline);
+  bg = parseline(buf, argv);
+
+  // Not builtin command
+  if (!builtin_cmd(argv)) {
+    if ((pid = Fork()) == 0) {
+      if ((execve(argv[0], argv, environ)) < 0) {
+        fprintf(stderr, "%s: Command not found.\n", argv[0]);
+        exit(EXIT_FAILURE);
+      }
+    }
+
+    if (!bg) {  // Foreground job
+      int status;
+      if ((waitpid(pid, &status, 0)) < 0) {
+        unix_error("waitfg: waitpid error");
+      }
+    } else {  // Background job
+      printf("(%d) %s", pid, cmdline);
+    }
+  }
+  return;
+}
 
 /*
  * parseline - Parse the command line and build the argv array.
@@ -220,7 +250,29 @@ int parseline(const char* cmdline, char** argv) {
  * builtin_cmd - If the user has typed a built-in command then execute
  *    it immediately.
  */
-int builtin_cmd(char** argv) { return 0; /* not a builtin command */ }
+int builtin_cmd(char** argv) {
+  if (strcmp(argv[0], "quit") == 0) {  // Built-in quit command
+    exit(EXIT_SUCCESS);
+  }
+
+  else if (strcmp(argv[0], "jobs") == 0) {
+    return 1;
+  }
+
+  else if (strcmp(argv[0], "bg") == 0) {
+    return 1;
+  }
+
+  else if (strcmp(argv[0], "fg") == 0) {
+    return 1;
+  }
+
+  // else if (strcmp(argv[0], "&") == 0) {
+  //   return 1;
+  // }
+
+  return 0; /* not a builtin command */
+}
 
 /*
  * do_bgfg - Execute the builtin bg and fg commands
@@ -453,4 +505,13 @@ handler_t* Signal(int signum, handler_t* handler) {
 void sigquit_handler(int sig) {
   printf("Terminating after receipt of SIGQUIT signal\n");
   exit(1);
+}
+
+pid_t Fork() {
+  pid_t pid;
+
+  if ((pid = fork()) < 0) {
+    unix_error("Fork error");
+  }
+  return pid;
 }
