@@ -6,12 +6,10 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Sun Jun 19 14:35:15 2022
+# Make data base, printed on Tue Jun 21 13:44:50 2022
 
 # Variables
 
-# environment
-TMUX_PANE = %21
 # environment
 GDK_BACKEND = x11
 # environment
@@ -19,10 +17,9 @@ LC_ALL = C
 # environment
 NO_AT_BRIDGE = 1
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-ac30e73b-b637-4422-b5f9-8d96a4bf4f61.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-60bc1fc6-2197-4c25-8eee-1b3fe5a6eec3.sock
 # environment
-VSCODE_CWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
- 
+VSCODE_CWD = /home/huibosa
 # environment
 WINDOWPATH = 1
 # environment
@@ -50,7 +47,7 @@ PWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
 # environment
 MAIL = /var/spool/mail/huibosa
 # environment
-OLDPWD = /home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout
+OLDPWD = /home/huibosa
 # automatic
 ^D = $(patsubst %/,%,$(dir $^))
 # environment
@@ -102,11 +99,9 @@ MAKEFILE_LIST := Makefile
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 98971
+VSCODE_PID = 123972
 # environment
 XDG_SESSION_TYPE = tty
-# environment
-TMUX = /tmp/tmux-1000/default,9218,0
 # automatic
 ?D = $(patsubst %/,%,$(dir $?))
 # automatic
@@ -132,7 +127,7 @@ MAKECMDGOALS := all
 # environment
 READER = zathura
 # environment
-SHLVL = 6
+SHLVL = 5
 # environment
 MAKELEVEL := 0
 # default
@@ -155,8 +150,6 @@ INVOCATION_ID = e327a683f31c4545a12c47e843d4192d
 VSCODE_LOG_NATIVE = false
 # environment
 PAPER = less
-# environment
-TERM_PROGRAM = tmux
 # automatic
 ?F = $(notdir $?)
 # environment
@@ -169,12 +162,10 @@ LS_COLORS = di=34;01:*Makefile=38;5;178:*.ipynb=38;5;208:*.7z=31:*.WARC=31:*.a=3
 +F = $(notdir $+)
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
-# environment
-TMUX_VERSION_MAJOR = 3
-# environment
-BROWSER = chromium
 # 'override' directive
 GNUMAKEFLAGS := 
+# environment
+BROWSER = chromium
 # environment
 LOGNAME = huibosa
 # environment
@@ -204,8 +195,6 @@ XDG_RUNTIME_DIR = /run/user/1000
 # makefile (from 'Makefile', line 6)
 CFLAGS = -g -Wall -Werror -std=c99 -m64
 # environment
-TMUX_VERSION_MINOR = 3
-# environment
 XDG_SESSION_CLASS = user
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
@@ -216,7 +205,7 @@ ELECTRON_RUN_AS_NODE = 1
 # environment
 VSCODE_IPC_HOOK = /run/user/1000/vscode-b6aad75a-1.68.1-main.sock
 # environment
-TERM = screen-256color
+TERM = linux
 # environment
 XDG_SESSION_ID = 1
 # environment
@@ -235,10 +224,8 @@ ELECTRON_NO_ATTACH_CONSOLE = 1
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink guile load
 # makefile (from 'Makefile', line 5)
 CC = gcc
-# environment
-TERM_PROGRAM_VERSION = 3.3a
 # variable set hash-table stats:
-# Load=113/1024=11%, Rehash=0, Collisions=22/147=15%
+# Load=107/1024=10%, Rehash=0, Collisions=13/142=9%
 
 # Pattern-specific Variable Values
 
@@ -246,7 +233,6 @@ TERM_PROGRAM_VERSION = 3.3a
 
 # Directories
 
- 
 # . (device 2052, inode 416839): 24 files, no impossibilities.
 
 # 24 files, no impossibilities in 1 directories.
@@ -259,10 +245,9 @@ TERM_PROGRAM_VERSION = 3.3a
 
 # Not a target:
 trans.c:
-#  Implicit rule search has been done.
-#  Last modified 2022-06-19 09:21:02.687355968
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
 Makefile:
@@ -280,23 +265,22 @@ cachelab.c:
 
 test-trans: test-trans.c trans.o cachelab.c cachelab.h
 #  Implicit rule search has not been done.
-#  Last modified 2022-06-19 12:10:37.130908218
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 16):
 	$(CC) $(CFLAGS) -o test-trans test-trans.c cachelab.c trans.o 
 
 # Not a target:
 test-trans.c:
-#  Implicit rule search has been done.
-#  Last modified 2022-06-19 09:21:02.680689302
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 # Not a target:
+ 
 csim.c:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-19 14:30:23.734423554
+#  Last modified 2022-06-19 16:42:36.694594269
 #  File has been updated.
 #  Successfully updated.
 
@@ -320,45 +304,25 @@ clean:
 
 tracegen: tracegen.c trans.o cachelab.c
 #  Implicit rule search has not been done.
-#  Last modified 2022-06-19 12:10:37.207574886
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 19):
 	$(CC) $(CFLAGS) -O0 -o tracegen tracegen.c trans.o cachelab.c
 
 # Not a target:
 tracegen.c:
-#  Implicit rule search has been done.
-#  Last modified 2022-06-19 09:21:02.680689302
-#  File has been updated.
-#  Successfully updated.
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
 
 all: csim test-trans tracegen
 #  Command line target.
 #  Implicit rule search has not been done.
-#  Implicit/static pattern stem: ''
 #  File does not exist.
 #  File has been updated.
 #  Needs to be updated (-q is set).
-# automatic
-# @ := all
-# automatic
-# * := 
-# automatic
-# < := csim
-# automatic
-# + := csim test-trans tracegen
-# automatic
-# % := 
- 
-# automatic
-# ^ := csim test-trans tracegen
-# automatic
-# ? := csim test-trans tracegen
-# automatic
-# | := 
 # variable set hash-table stats:
-# Load=8/32=25%, Rehash=0, Collisions=2/12=17%
+# Load=0/32=0%, Rehash=0, Collisions=0/5=0%
 #  recipe to execute (from 'Makefile', line 9):
 	# Generate a handin tar file each time you compile
 	-tar -cvf ${USER}-handin.tar  csim.c trans.c 
@@ -372,9 +336,8 @@ cachelab.h:
 
 trans.o: trans.c
 #  Implicit rule search has not been done.
-#  Last modified 2022-06-19 09:21:02.687355968
-#  File has been updated.
-#  Successfully updated.
+#  Modification time never checked.
+#  File has not been updated.
 #  recipe to execute (from 'Makefile', line 22):
 	$(CC) $(CFLAGS) -O0 -c trans.c
 
@@ -386,9 +349,28 @@ trans.o: trans.c
 
 csim: csim.c cachelab.c cachelab.h
 #  Implicit rule search has not been done.
-#  Last modified 2022-06-19 14:30:25.577756928
+#  Implicit/static pattern stem: ''
+#  Last modified 2022-06-19 16:37:22.614587528
 #  File has been updated.
-#  Successfully updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := csim
+# automatic
+# * := 
+# automatic
+# < := csim.c
+# automatic
+# + := csim.c cachelab.c cachelab.h
+# automatic
+# % := 
+# automatic
+# ^ := csim.c cachelab.c cachelab.h
+# automatic
+# ? := csim.c
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=2/13=15%
 #  recipe to execute (from 'Makefile', line 13):
 	$(CC) $(CFLAGS) -o csim csim.c cachelab.c -lm 
 
@@ -406,6 +388,6 @@ csim: csim.c cachelab.c cachelab.h
 # strcache performance: lookups = 60 / hit rate = 50%
 # hash-table stats:
 # Load=30/8192=0%, Rehash=0, Collisions=0/60=0%
-# Finished Make data base on Sun Jun 19 14:35:15 2022
+# Finished Make data base on Tue Jun 21 13:44:50 2022
 
  

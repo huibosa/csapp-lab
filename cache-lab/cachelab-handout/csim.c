@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
+#include <bits/getopt_core.h>
 #include "cachelab.h"
 
 #define LINELEN 100
@@ -187,36 +189,39 @@ void freeCache(Cache* cache) {
 //
 ///////////////////////////////////////////////////////////////////////
 void parseFlag(int argc, char* argv[]) {
-  for (int i = 1; i < argc && argv[i][0] == '-'; i++) {
-    // TODO:
-    switch (argv[i][1]) {
+  int opt;
+  while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1) {
+    switch (opt) {
       case 'h':
         opts.help = 1;
         usage();
-        exit(0);
-        break;
+        exit(EXIT_SUCCESS);
       case 'v':
         opts.verbose = 1;
         break;
       case 's':
-        i++;
-        opts.s = atoi(argv[i]);
+        opts.s = atoi(optarg);
         break;
       case 'E':
-        i++;
-        opts.E = atoi(argv[i]);
+        opts.E = atoi(optarg);
         break;
       case 'b':
-        i++;
-        opts.b = atoi(argv[i]);
+        opts.b = atoi(optarg);
         break;
       case 't':
-        i++;
-        opts.infile = argv[i];
+        opts.infile = optarg;
         break;
       default:
-        puts("Undefined flag.");
+        usage();
+        exit(EXIT_FAILURE);
     }
+  }
+  // Handle case with no arguments or wrong arguments
+  if (optind < argc || optind == 1) {
+    fprintf(stderr, "%s: Missing required command line argument\n",
+            argv[0]);
+    usage();
+    exit(EXIT_FAILURE);
   }
 }
 

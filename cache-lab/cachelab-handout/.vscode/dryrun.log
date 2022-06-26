@@ -1,5 +1,9 @@
-make --dry-run --keep-going --print-directory
+make --dry-run --always-make --keep-going --print-directory
 make: Entering directory '/home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout'
+gcc -g -Wall -Werror -std=c99 -m64 -o csim csim.c cachelab.c -lm 
+gcc -g -Wall -Werror -std=c99 -m64 -O0 -c trans.c
+gcc -g -Wall -Werror -std=c99 -m64 -o test-trans test-trans.c cachelab.c trans.o 
+gcc -g -Wall -Werror -std=c99 -m64 -O0 -o tracegen tracegen.c trans.o cachelab.c
 # Generate a handin tar file each time you compile
 tar -cvf huibosa-handin.tar  csim.c trans.c 
 make: Leaving directory '/home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout'
