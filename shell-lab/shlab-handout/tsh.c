@@ -170,6 +170,9 @@ void eval(char* cmdline) {
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
+  if (argv[0] == NULL) { // Ignore empty line
+    return;
+  }
 
   // Not builtin command
   if (!builtin_cmd(argv)) {
@@ -315,7 +318,7 @@ void sigint_handler(int sig) {
 
     printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
 
-    if ((rc = kill(pid, SIGINT)) < 0) {
+    if ((rc = kill(-pid, SIGINT)) < 0) {
       unix_error("Kill error");
     }
 
@@ -330,7 +333,25 @@ void sigint_handler(int sig) {
  *     the user types ctrl-z at the keyboard. Catch it and suspend the
  *     foreground job by sending it a SIGTSTP.
  */
-void sigtstp_handler(int sig) { return; }
+void sigtstp_handler(int sig) {
+  int rc;
+  pid_t pid;
+  struct job_t fg;
+
+  if ((pid = fgpid(jobs)) != 0) {
+    fg = *getjobpid(jobs, pid);
+
+    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGTSTP);
+
+    if ((rc = kill(-pid, SIGTSTP)) < 0) {
+      unix_error("Kill error");
+    }
+
+    fg.state = ST;
+  }
+
+  return;
+}
 
 /*********************
  * End signal handlers
