@@ -174,6 +174,7 @@ void eval(char* cmdline) {
   // Not builtin command
   if (!builtin_cmd(argv)) {
     if ((pid = Fork()) == 0) {
+      setpgid(0, 0);  // Put child in new process group
       if ((execve(argv[0], argv, environ)) < 0) {
         fprintf(stderr, "%s: Command not found.\n", argv[0]);
         exit(EXIT_FAILURE);
@@ -187,6 +188,7 @@ void eval(char* cmdline) {
       }
     } else {  // Background job
       printf("(%d) %s", pid, cmdline);
+      // TODO
     }
   }
   return;
@@ -256,6 +258,7 @@ int builtin_cmd(char** argv) {
   }
 
   else if (strcmp(argv[0], "jobs") == 0) {
+    listjobs(jobs);
     return 1;
   }
 
@@ -302,7 +305,25 @@ void sigchld_handler(int sig) { return; }
  *    user types ctrl-c at the keyboard.  Catch it and send it along
  *    to the foreground job.
  */
-void sigint_handler(int sig) { return; }
+void sigint_handler(int sig) {
+  int rc;
+  pid_t pid;
+  struct job_t fg;
+
+  if ((pid = fgpid(jobs)) != 0) {
+    fg = *getjobpid(jobs, pid);
+
+    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
+
+    if ((rc = kill(pid, SIGINT)) < 0) {
+      unix_error("Kill error");
+    }
+
+    deletejob(jobs, pid);
+  }
+
+  return;
+}
 
 /*
  * sigtstp_handler - The kernel sends a SIGTSTP to the shell whenever
