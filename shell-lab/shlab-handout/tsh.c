@@ -165,12 +165,13 @@ int main(int argc, char** argv) {
 void eval(char* cmdline) {
   char buf[MAXLINE];
   char* argv[MAXARGS];
+  int status;
   int bg;
   pid_t pid;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
-  if (argv[0] == NULL) { // Ignore empty line
+  if (argv[0] == NULL) {  // Ignore empty line
     return;
   }
 
@@ -185,13 +186,13 @@ void eval(char* cmdline) {
     }
 
     if (!bg) {  // Foreground job
-      int status;
+      addjob(jobs, pid, FG, cmdline);
       if ((waitpid(pid, &status, 0)) < 0) {
         unix_error("waitfg: waitpid error");
       }
     } else {  // Background job
+      addjob(jobs, pid, BG, cmdline);
       printf("(%d) %s", pid, cmdline);
-      // TODO
     }
   }
   return;
@@ -314,17 +315,13 @@ void sigint_handler(int sig) {
   struct job_t fg;
 
   if ((pid = fgpid(jobs)) != 0) {
-    fg = *getjobpid(jobs, pid);
-
-    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
-
+    fg = *getjobpid(jobs, pid);  // Get foreground job
     if ((rc = kill(-pid, SIGINT)) < 0) {
       unix_error("Kill error");
     }
-
     deletejob(jobs, pid);
+    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
   }
-
   return;
 }
 
@@ -339,17 +336,13 @@ void sigtstp_handler(int sig) {
   struct job_t fg;
 
   if ((pid = fgpid(jobs)) != 0) {
-    fg = *getjobpid(jobs, pid);
-
-    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGTSTP);
-
+    fg = *getjobpid(jobs, pid);  // Get foreground job
     if ((rc = kill(-pid, SIGTSTP)) < 0) {
       unix_error("Kill error");
     }
-
     fg.state = ST;
+    printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
   }
-
   return;
 }
 
