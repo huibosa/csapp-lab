@@ -212,14 +212,15 @@ void parseFlag(int argc, char* argv[]) {
         opts.infile = optarg;
         break;
       default:
+        fprintf(stderr, "%s: Missing required command line argument\n",
+                argv[0]);
         usage();
         exit(EXIT_FAILURE);
     }
   }
   // Handle case with no arguments or wrong arguments
   if (optind < argc || optind == 1) {
-    fprintf(stderr, "%s: Missing required command line argument\n",
-            argv[0]);
+    fprintf(stderr, "%s: Missing required command line argument\n", argv[0]);
     usage();
     exit(EXIT_FAILURE);
   }
