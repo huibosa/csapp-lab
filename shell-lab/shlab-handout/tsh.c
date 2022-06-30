@@ -86,6 +86,7 @@ typedef void handler_t(int);
 handler_t* Signal(int signum, handler_t* handler);
 
 static pid_t Fork();
+static void Kill(pid_t pid, int sig);
 
 /*
  * main - The shell's main routine
@@ -346,15 +347,12 @@ void sigchld_handler(int sig) { return; }
  *    to the foreground job.
  */
 void sigint_handler(int sig) {
-  int rc;
   pid_t pid;
   struct job_t fg;
 
   if ((pid = fgpid(jobs)) != 0) {
     fg = *getjobpid(jobs, pid);  // Get foreground job
-    if ((rc = kill(-pid, SIGINT)) < 0) {
-      unix_error("Kill error");
-    }
+    Kill(-pid, SIGINT);
     deletejob(jobs, pid);
     // WARNING: Not async safe
     printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
@@ -368,15 +366,12 @@ void sigint_handler(int sig) {
  *     foreground job by sending it a SIGTSTP.
  */
 void sigtstp_handler(int sig) {
-  int rc;
   pid_t pid;
   struct job_t fg;
 
   if ((pid = fgpid(jobs)) != 0) {
     fg = *getjobpid(jobs, pid);  // Get foreground job
-    if ((rc = kill(-pid, SIGTSTP)) < 0) {
-      unix_error("Kill error");
-    }
+    Kill(-pid, SIGTSTP);
     fg.state = ST;
     printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
   }
@@ -586,4 +581,10 @@ pid_t Fork() {
     unix_error("Fork error");
   }
   return pid;
+}
+
+void Kill(pid_t pid, int sig) {
+  if (kill(pid, sig) < 0) {
+    unix_error("Kill error");
+  }
 }
