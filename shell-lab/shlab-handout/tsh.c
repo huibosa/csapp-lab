@@ -3,6 +3,7 @@
  *
  * huibosa
  */
+#include <bits/types/sigset_t.h>
 #include <ctype.h>
 #include <errno.h>
 #include <signal.h>
@@ -168,6 +169,7 @@ void eval(char* cmdline) {
   int status;
   int bg;
   pid_t pid;
+  sigset_t mask_all, mask_one, prev_one;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
@@ -175,24 +177,38 @@ void eval(char* cmdline) {
     return;
   }
 
-  // Not builtin command
+  // Check if builtin command
   if (!builtin_cmd(argv)) {
+    sigfillset(&mask_all);
+    sigemptyset(&mask_one);
+    sigaddset(&mask_one, SIGCHLD);
+
+    sigprocmask(SIG_BLOCK, &mask_one, &prev_one);  // Block SIGCHLD
     if ((pid = Fork()) == 0) {
-      setpgid(0, 0);  // Put child in new process group
+      // Put child in new process group
+      setpgid(0, 0);
+
+      // Child process
       if ((execve(argv[0], argv, environ)) < 0) {
+        sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Unblock SIGCHLD
         fprintf(stderr, "%s: Command not found.\n", argv[0]);
         exit(EXIT_FAILURE);
       }
     }
 
-    if (!bg) {  // Foreground job
-      addjob(jobs, pid, FG, cmdline);
-      if ((waitpid(pid, &status, 0)) < 0) {
+    // Add new job to job list
+    sigprocmask(SIG_BLOCK, &mask_all, NULL);  // Block all signals
+    addjob(jobs, pid, FG, cmdline);
+    sigprocmask(SIG_SETMASK, &prev_one, NULL);  // resume signal mask
+
+    if (!bg) {
+      waitfg(pid);
+    } else {
+      // Continue while waiting
+      if ((waitpid(pid, &status, WNOHANG)) < 0) {
         unix_error("waitfg: waitpid error");
       }
-    } else {  // Background job
-      addjob(jobs, pid, BG, cmdline);
-      printf("(%d) %s", pid, cmdline);
+      printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
     }
   }
   return;
@@ -289,7 +305,17 @@ void do_bgfg(char** argv) { return; }
 /*
  * waitfg - Block until process pid is no longer the foreground process
  */
-void waitfg(pid_t pid) { return; }
+void waitfg(pid_t pid) {
+  int status;
+
+  // Wait for terminated an stopped child
+  if ((waitpid(pid, &status, WUNTRACED)) < 0) {
+    unix_error("waitfg: waitpid error");
+  }
+  deletejob(jobs, pid);
+
+  return;
+}
 
 /*****************
  * Signal handlers
@@ -320,6 +346,7 @@ void sigint_handler(int sig) {
       unix_error("Kill error");
     }
     deletejob(jobs, pid);
+    // WARNING: Not async safe
     printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
   }
   return;
@@ -341,6 +368,7 @@ void sigtstp_handler(int sig) {
       unix_error("Kill error");
     }
     fg.state = ST;
+    // WARNING: Not async safe
     printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
   }
   return;
