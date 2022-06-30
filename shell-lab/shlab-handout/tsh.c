@@ -87,7 +87,7 @@ handler_t* Signal(int signum, handler_t* handler);
 
 static pid_t Fork();
 static void Kill(pid_t pid, int sig);
-static pid_t Waitpid(pid_t pid, int *iptr, int options);
+static pid_t Waitpid(pid_t pid, int* iptr, int options);
 
 /*
  * main - The shell's main routine
@@ -168,10 +168,9 @@ int main(int argc, char** argv) {
 void eval(char* cmdline) {
   char buf[MAXLINE];
   char* argv[MAXARGS];
-  int status;
   int bg;
   pid_t pid;
-  sigset_t mask_all, mask_one, prev_one;
+  sigset_t maskAll, maskChild, prevMask;
 
   strcpy(buf, cmdline);
   bg = parseline(buf, argv);
@@ -200,12 +199,10 @@ void eval(char* cmdline) {
 
     sigprocmask(SIG_BLOCK, &maskAll, NULL);  // Block all signals
     if (!bg) {
-      sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
       addjob(jobs, pid, FG, cmdline);             // Add new foreground job
       sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Resume signal mask
       waitfg(pid);                                // Wait for foreground job
     } else {
-      sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
       addjob(jobs, pid, BG, cmdline);             // Add background job
       sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Resume signal mask
       printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
@@ -282,14 +279,10 @@ int builtin_cmd(char** argv) {
     return 1;
   }
 
-  else if (strcmp(argv[0], "bg") == 0) {
+  else if (strcmp(argv[0], "bg") == 0 || strcmp(argv[0], "fg") == 0) {
+    do_bgfg(argv);
     return 1;
   }
-
-  else if (strcmp(argv[0], "fg") == 0) {
-    return 1;
-  }
-
   // else if (strcmp(argv[0], "&") == 0) {
   //   return 1;
   // }
@@ -300,13 +293,51 @@ int builtin_cmd(char** argv) {
 /*
  * do_bgfg - Execute the builtin bg and fg commands
  */
-void do_bgfg(char** argv) { return; }
+void do_bgfg(char** argv) {
+  struct job_t* job;
+  pid_t pid;
+  int jid;
+
+  // Called without pid or jid
+  if (argv[1] == NULL) {
+    printf("%s command requires PID or %%jobid argument\n", argv[0]);
+    return;
+  }
+
+  // Get job by pid or jid
+  if (argv[1][0] == '%') {
+    jid = (pid_t)strtol(argv[1] + 1, NULL, 10);
+    if ((job = getjobjid(jobs, jid)) == NULL) {
+      printf("%s: No such job\n", argv[1]);
+      return;
+    }
+  } else if (isdigit(argv[1][0])) {
+    pid = (int)strtol(argv[1], NULL, 10);
+    if ((job = getjobpid(jobs, pid)) == NULL) {
+      printf("(%s): No such process\n", argv[1]);
+      return;
+    }
+  } else {
+    printf("%s argument must be a PID or %%jobid\n", argv[0]);
+    return;
+  }
+
+  if (strcmp(argv[0], "bg") == 0) {
+    job->state = BG;
+    printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
+  } else {
+    job->state = FG;
+    waitfg(job->pid);
+  }
+
+  Kill(-(job->pid), SIGCONT);
+}
 
 /*
  * waitfg - Block until process pid is no longer the foreground process
  */
 void waitfg(pid_t pid) {
-  struct job_t *job;
+  struct job_t* job;
   sigset_t mask;
 
   sigemptyset(&mask);
@@ -339,11 +370,13 @@ void sigchld_handler(int sig) {
 
   if (WIFEXITED(status)) {
     deletejob(jobs, pid);
+  } else if (WIFSIGNALED(status)) {
+    deletejob(jobs, pid);
   } else if (WIFSTOPPED(status)) {
     job->state = ST;
   } else if (WIFCONTINUED(status)) {
     // NOTE:
-    job->state = BG;
+    // job->state = BG;
   }
 
   return;
@@ -362,7 +395,6 @@ void sigint_handler(int sig) {
     fg = *getjobpid(jobs, pid);  // Get foreground job
     Kill(-pid, SIGINT);
     deletejob(jobs, pid);
-    // WARNING: Not async safe
     printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
   }
   return;
@@ -379,8 +411,8 @@ void sigtstp_handler(int sig) {
 
   if ((pid = fgpid(jobs)) != 0) {
     fg = *getjobpid(jobs, pid);  // Get foreground job
-    Kill(-pid, SIGTSTP);
     fg.state = ST;
+    Kill(-pid, SIGTSTP);
     printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
   }
   return;
@@ -597,7 +629,7 @@ void Kill(pid_t pid, int sig) {
   }
 }
 
-pid_t Waitpid(pid_t pid, int *iptr, int options) {
+pid_t Waitpid(pid_t pid, int* iptr, int options) {
   pid_t retpid;
 
   if ((retpid = waitpid(pid, iptr, options)) < 0) {
