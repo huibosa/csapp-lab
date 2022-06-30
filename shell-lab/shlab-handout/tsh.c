@@ -87,6 +87,7 @@ handler_t* Signal(int signum, handler_t* handler);
 
 static pid_t Fork();
 static void Kill(pid_t pid, int sig);
+static pid_t Waitpid(pid_t pid, int *iptr, int options);
 
 /*
  * main - The shell's main routine
@@ -587,4 +588,13 @@ void Kill(pid_t pid, int sig) {
   if (kill(pid, sig) < 0) {
     unix_error("Kill error");
   }
+}
+
+pid_t Waitpid(pid_t pid, int *iptr, int options) {
+  pid_t retpid;
+
+  if ((retpid = waitpid(pid, iptr, options)) < 0) {
+    unix_error("Waitpid error");
+  }
+  return retpid;
 }
