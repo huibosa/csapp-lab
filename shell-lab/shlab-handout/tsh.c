@@ -188,7 +188,7 @@ void eval(char* cmdline) {
       // Put child in new process group
       setpgid(0, 0);
 
-      // Child process
+      // BUG: Still add job to job list for invalid command
       if ((execve(argv[0], argv, environ)) < 0) {
         sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Unblock SIGCHLD
         fprintf(stderr, "%s: Command not found.\n", argv[0]);
@@ -196,14 +196,16 @@ void eval(char* cmdline) {
       }
     }
 
-    // Add new job to job list
-    sigprocmask(SIG_BLOCK, &mask_all, NULL);  // Block all signals
-    addjob(jobs, pid, FG, cmdline);
-    sigprocmask(SIG_SETMASK, &prev_one, NULL);  // resume signal mask
-
     if (!bg) {
-      waitfg(pid);
+      sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
+      addjob(jobs, pid, FG, cmdline);             // Add new foreground job
+      sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Resume signal mask
+      waitfg(pid);                                // Wait for foreground job
     } else {
+      sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
+      addjob(jobs, pid, BG, cmdline);             // Add background job
+      sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Resume signal mask
+
       // Continue while waiting
       if ((waitpid(pid, &status, WNOHANG)) < 0) {
         unix_error("waitfg: waitpid error");
@@ -307,12 +309,20 @@ void do_bgfg(char** argv) { return; }
  */
 void waitfg(pid_t pid) {
   int status;
+  struct job_t* fg;
 
   // Wait for terminated an stopped child
   if ((waitpid(pid, &status, WUNTRACED)) < 0) {
     unix_error("waitfg: waitpid error");
   }
-  deletejob(jobs, pid);
+
+  fg = getjobpid(jobs, pid);
+
+  if (WIFEXITED(status)) {
+    deletejob(jobs, pid);
+  } else if (WIFSTOPPED(status)) {
+    fg->state = ST;
+  }
 
   return;
 }
@@ -368,7 +378,6 @@ void sigtstp_handler(int sig) {
       unix_error("Kill error");
     }
     fg.state = ST;
-    // WARNING: Not async safe
     printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
   }
   return;
