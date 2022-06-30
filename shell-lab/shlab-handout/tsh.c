@@ -306,23 +306,15 @@ void do_bgfg(char** argv) { return; }
  * waitfg - Block until process pid is no longer the foreground process
  */
 void waitfg(pid_t pid) {
-  int status;
-  struct job_t* fg;
+  struct job_t *job;
+  sigset_t mask;
 
-  // Wait for terminated an stopped child
-  if ((waitpid(pid, &status, WUNTRACED)) < 0) {
-    unix_error("waitfg: waitpid error");
+  sigemptyset(&mask);
+  job = getjobpid(jobs, pid);
+
+  while (job->state == FG) {
+    sigsuspend(&mask);
   }
-
-  fg = getjobpid(jobs, pid);
-
-  if (WIFEXITED(status)) {
-    deletejob(jobs, pid);
-  } else if (WIFSTOPPED(status)) {
-    fg->state = ST;
-  }
-
-  return;
 }
 
 /*****************
@@ -336,7 +328,26 @@ void waitfg(pid_t pid) {
  *     available zombie children, but doesn't wait for any other
  *     currently running children to terminate.
  */
-void sigchld_handler(int sig) { return; }
+void sigchld_handler(int sig) {
+  pid_t pid;
+  int status;
+  struct job_t* job;
+
+  // Wait for terminated an stopped child
+  pid = Waitpid(-1, &status, WUNTRACED | WCONTINUED);
+  job = getjobpid(jobs, pid);
+
+  if (WIFEXITED(status)) {
+    deletejob(jobs, pid);
+  } else if (WIFSTOPPED(status)) {
+    job->state = ST;
+  } else if (WIFCONTINUED(status)) {
+    // NOTE:
+    job->state = BG;
+  }
+
+  return;
+}
 
 /*
  * sigint_handler - The kernel sends a SIGINT to the shell whenver the
