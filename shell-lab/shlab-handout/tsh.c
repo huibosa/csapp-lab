@@ -389,13 +389,14 @@ void sigchld_handler(int sig) {
  */
 void sigint_handler(int sig) {
   pid_t pid;
-  struct job_t fg;
+  struct job_t* job;
 
   if ((pid = fgpid(jobs)) != 0) {
-    fg = *getjobpid(jobs, pid);  // Get foreground job
+    job = getjobpid(jobs, pid);  // Get foreground job
     Kill(-pid, SIGINT);
     deletejob(jobs, pid);
-    printf("Job [%d] (%d) terminated by signal %d\n", fg.jid, fg.pid, SIGINT);
+    printf("Job [%d] (%d) terminated by signal %d\n", job->jid, job->pid,
+           SIGINT);
   }
   return;
 }
@@ -407,13 +408,13 @@ void sigint_handler(int sig) {
  */
 void sigtstp_handler(int sig) {
   pid_t pid;
-  struct job_t fg;
+  struct job_t* job;
 
   if ((pid = fgpid(jobs)) != 0) {
-    fg = *getjobpid(jobs, pid);  // Get foreground job
-    fg.state = ST;
+    job = getjobpid(jobs, pid);  // Get foreground job
+    job->state = ST;
     Kill(-pid, SIGTSTP);
-    printf("Job [%d] (%d) stopped by signal %d\n", fg.jid, fg.pid, SIGTSTP);
+    printf("Job [%d] (%d) stopped by signal %d\n", job->jid, job->pid, SIGTSTP);
   }
   return;
 }
