@@ -181,37 +181,33 @@ void eval(char* cmdline) {
 
   // Check if builtin command
   if (!builtin_cmd(argv)) {
-    sigfillset(&mask_all);
-    sigemptyset(&mask_one);
-    sigaddset(&mask_one, SIGCHLD);
+    sigfillset(&maskAll);
+    sigemptyset(&maskChild);
+    sigaddset(&maskChild, SIGCHLD);
 
-    sigprocmask(SIG_BLOCK, &mask_one, &prev_one);  // Block SIGCHLD
+    sigprocmask(SIG_BLOCK, &maskChild, &prevMask);  // Block SIGCHLD
     if ((pid = Fork()) == 0) {
       // Put child in new process group
       setpgid(0, 0);
 
       // BUG: Still add job to job list for invalid command
       if ((execve(argv[0], argv, environ)) < 0) {
-        sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Unblock SIGCHLD
+        sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Unblock SIGCHLD
         fprintf(stderr, "%s: Command not found.\n", argv[0]);
         exit(EXIT_FAILURE);
       }
     }
 
+    sigprocmask(SIG_BLOCK, &maskAll, NULL);  // Block all signals
     if (!bg) {
       sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
       addjob(jobs, pid, FG, cmdline);             // Add new foreground job
-      sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Resume signal mask
+      sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Resume signal mask
       waitfg(pid);                                // Wait for foreground job
     } else {
       sigprocmask(SIG_BLOCK, &mask_all, NULL);    // Block all signals
       addjob(jobs, pid, BG, cmdline);             // Add background job
-      sigprocmask(SIG_SETMASK, &prev_one, NULL);  // Resume signal mask
-
-      // Continue while waiting
-      if ((waitpid(pid, &status, WNOHANG)) < 0) {
-        unix_error("waitfg: waitpid error");
-      }
+      sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Resume signal mask
       printf("[%d] (%d) %s", pid2jid(pid), pid, cmdline);
     }
   }
