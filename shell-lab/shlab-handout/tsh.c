@@ -189,7 +189,6 @@ void eval(char* cmdline) {
       // Put child in new process group
       setpgid(0, 0);
 
-      // BUG: Still add job to job list for invalid command
       if ((execve(argv[0], argv, environ)) < 0) {
         sigprocmask(SIG_SETMASK, &prevMask, NULL);  // Unblock SIGCHLD
         fprintf(stderr, "%s: Command not found.\n", argv[0]);
@@ -283,9 +282,6 @@ int builtin_cmd(char** argv) {
     do_bgfg(argv);
     return 1;
   }
-  // else if (strcmp(argv[0], "&") == 0) {
-  //   return 1;
-  // }
 
   return 0; /* not a builtin command */
 }
@@ -324,13 +320,11 @@ void do_bgfg(char** argv) {
 
   if (strcmp(argv[0], "bg") == 0) {
     job->state = BG;
-    printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
+    Kill(-(job->pid), SIGCONT);
   } else {
     job->state = FG;
-    waitfg(job->pid);
+    Kill(-(job->pid), SIGCONT);
   }
-
-  Kill(-(job->pid), SIGCONT);
 }
 
 /*
@@ -371,12 +365,19 @@ void sigchld_handler(int sig) {
   if (WIFEXITED(status)) {
     deletejob(jobs, pid);
   } else if (WIFSIGNALED(status)) {
+    printf("Job [%d] (%d) terminated by signal %d\n", job->jid, job->pid,
+           WTERMSIG(status));
     deletejob(jobs, pid);
   } else if (WIFSTOPPED(status)) {
+    printf("Job [%d] (%d) stopped by signal %d\n", job->jid, job->pid,
+           WSTOPSIG(status));
     job->state = ST;
   } else if (WIFCONTINUED(status)) {
-    // NOTE:
-    // job->state = BG;
+    if (job->state == BG) {
+      printf("[%d] (%d) %s", job->jid, job->pid, job->cmdline);
+    } else if (job->state == FG) {
+      waitfg(jobs->pid);
+    }
   }
 
   return;
@@ -389,14 +390,9 @@ void sigchld_handler(int sig) {
  */
 void sigint_handler(int sig) {
   pid_t pid;
-  struct job_t* job;
 
   if ((pid = fgpid(jobs)) != 0) {
-    job = getjobpid(jobs, pid);  // Get foreground job
     Kill(-pid, SIGINT);
-    deletejob(jobs, pid);
-    printf("Job [%d] (%d) terminated by signal %d\n", job->jid, job->pid,
-           SIGINT);
   }
   return;
 }
@@ -408,13 +404,9 @@ void sigint_handler(int sig) {
  */
 void sigtstp_handler(int sig) {
   pid_t pid;
-  struct job_t* job;
 
   if ((pid = fgpid(jobs)) != 0) {
-    job = getjobpid(jobs, pid);  // Get foreground job
-    job->state = ST;
     Kill(-pid, SIGTSTP);
-    printf("Job [%d] (%d) stopped by signal %d\n", job->jid, job->pid, SIGTSTP);
   }
   return;
 }
