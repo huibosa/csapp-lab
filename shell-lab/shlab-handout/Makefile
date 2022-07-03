@@ -8,7 +8,7 @@ TSH = ./tsh
 TSHREF = ./tshref
 TSHARGS = "-p"
 CC = gcc
-CFLAGS = -Wall -O2
+CFLAGS = -Wall -O2 -g -lcsapp
 FILES = $(TSH) ./myspin ./mysplit ./mystop ./myint
 
 all: $(FILES)
@@ -96,5 +96,3 @@ rtest16:
 # clean up
 clean:
 	rm -f $(FILES) *.o *~
-
-

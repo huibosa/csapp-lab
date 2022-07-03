@@ -1,0 +1,6 @@
+./myspin 4
+
+SLEEP 1
+TSTP
+
+bg %1
