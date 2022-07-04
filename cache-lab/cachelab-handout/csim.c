@@ -1,63 +1,68 @@
 #include <ctype.h>
 #include <math.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
+#include <stdbool.h>
 #include <bits/getopt_core.h>
 #include "cachelab.h"
 
 #define LINELEN 100
 #define ADDRLEN 16
 #define ADDRBITS (1 << 6)
-#define LASTBIT(k, n) ((k) & ((1 << (n)) - 1))
-#define SUBBIT(k, m, n) LASTBIT((k) >> (m), ((n) - (m)))
+// Move right (n - 1) bit and then get last (m - n) bit
+#define SUBBIT(k, m, n) ((k) >> ((n)-1)) & ((1 << ((m) - (n) + 1)) - 1)
 
 typedef struct {
-  int help;
-  int verbose;
-  int s;
-  int E;
-  int b;
-  char* infile;
+  unsigned long s;
+  unsigned long E;
+  unsigned long b;
+  char* traceFile;
+  bool verbose;
 } CmdOpts;
 
 typedef struct {
   unsigned long tag;
-  char* block;
-  unsigned short valid : 1;
+  unsigned long lruCounter;
+  bool valid;
+  char block[];
 } Line;
 
 typedef struct {
-  Line* line;
+  unsigned long E;
+  Line* line[];
 } Set;
 
 typedef struct {
-  int C, S, E, B, m, t, s, b;
-  int numHits;
-  int numMisses;
-  int numEvictions;
-  Set* set;
+  unsigned long numHits;
+  unsigned long numMisses;
+  unsigned long numEvictions;
+  unsigned long C, S, E, B, m, t, s, b;
+  Set* set[];
 } Cache;
 
 void usage(void);
-void parseFlag(int argc, char* argv[]);
-void buildCache(Cache* cache);
+void parseCmdOpts(int argc, char* argv[]);
+Cache* initCache(void);
+Set* initSet(unsigned long E, unsigned long B);
+Line* initLine(unsigned long B);
 void freeCache(Cache* cache);
-void parseFile(char* infile, Cache* cache);
-void printCache(Cache* cache);
+void readFile(char* infile, Cache* cache);
+void load(Cache* cache, unsigned long addr);
 
 CmdOpts opts;  // Commmand line options
+unsigned long counter = 0;
 
 int main(int argc, char* argv[]) {
-  Cache cache;
+  Cache* pc;
 
-  parseFlag(argc, argv);
-  buildCache(&cache);
-  parseFile(opts.infile, &cache);
-  printCache(&cache);
-  freeCache(&cache);
+  parseCmdOpts(argc, argv);
+  pc = initCache();
+  readFile(opts.traceFile, pc);
+  printSummary(pc->numHits, pc->numMisses, pc->numEvictions);
+  freeCache(pc);
 
   return 0;
 }
@@ -70,37 +75,67 @@ int main(int argc, char* argv[]) {
 // * cache.t <t>: Number of tab bits (t = m - s - b)
 //
 ///////////////////////////////////////////////////////////////////////
-void buildCache(Cache* cache) {
-  cache->numHits = 0;
-  cache->numMisses = 0;
-  cache->numEvictions = 0;
+Cache* initCache(void) {
+  unsigned long S = 1 << opts.s;
+  unsigned long B = 1 << opts.b;
 
-  cache->s = opts.s;
-  cache->E = opts.E;
-  cache->b = opts.b;
+  Cache* pc = (Cache*)malloc(sizeof(Cache) + sizeof(Set*) * S);
 
-  cache->B = pow(2, cache->b);
-  cache->S = pow(2, cache->s);
-  cache->C = cache->B * cache->E * cache->S;  // C = B * E * S
+  pc->numHits = 0;
+  pc->numMisses = 0;
+  pc->numEvictions = 0;
 
-  cache->m = ADDRBITS;                        // 64 bit address
-  cache->t = cache->m - cache->s - cache->b;  // t = m - s - b
+  pc->s = opts.s;
+  pc->E = opts.E;
+  pc->b = opts.b;
 
-  cache->set = (Set*)malloc(cache->S * sizeof(Set));
-  for (Set* p = cache->set; p < cache->set + cache->S; p++) {
-    p->line = (Line*)malloc(cache->E * sizeof(Line));
+  pc->B = B;
+  pc->S = S;
+  pc->C = pc->B * pc->E * pc->S;  // C = B * E * S
+
+  pc->m = ADDRBITS;               // 64 bit address
+  pc->t = pc->m - pc->s - pc->b;  // t = m - s - b
+
+  for (int i = 0; i < pc->S; i++) {
+    pc->set[i] = initSet(pc->E, pc->B);
   }
 
-  // Init lines
-  for (int i = 0; i < cache->S; i++) {
-    Set* pset = cache->set + i;
-    for (int j = 0; j < cache->E; j++) {
-      Line* pline = pset->line + j;
-      pline->tag = 0;
-      pline->valid = 0;
-      pline->block = (char*)malloc(cache->B * sizeof(char));
+  return pc;
+}
+
+Set* initSet(unsigned long E, unsigned long B) {
+  Set* ps;
+
+  ps = (Set*)malloc(sizeof(Set) + sizeof(Line*) * E);
+  ps->E = E;
+
+  for (int i = 0; i < E; i++) {
+    ps->line[i] = initLine(B);
+  }
+
+  return ps;
+}
+
+Line* initLine(unsigned long B) {
+  Line* pl;
+
+  pl = (Line*)malloc(sizeof(Line) + sizeof(char) * B);
+
+  pl->valid = false;
+  pl->tag = 0;
+  pl->lruCounter = 0;
+
+  return pl;
+}
+
+void freeCache(Cache* pc) {
+  for (size_t i = 0; i < pc->S; i++) {
+    for (size_t j = 0; j < pc->E; j++) {
+      free(pc->set[i]->line[j]);
     }
+    free(pc->set[i]);
   }
+  free(pc);
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -115,7 +150,7 @@ void buildCache(Cache* cache) {
 // "M" a data modify (i.e., a data load followed by a data store).
 //
 ////////////////////////////////////////////////////////////////////
-void parseFile(char* infile, Cache* cache) {
+void readFile(char* infile, Cache* pc) {
   FILE* fp;
   char buf[LINELEN];
 
@@ -124,44 +159,39 @@ void parseFile(char* infile, Cache* cache) {
     exit(EXIT_FAILURE);
   }
 
-  srand(time(NULL));
-
-  // Parse line
   while (fgets(buf, LINELEN, fp) != NULL) {
+    char* p = strchr(buf, '\n');
+    *p = '\0';
+
     // Ignore all instruction cache accesses
     if (buf[0] == 'I') {
       continue;
     }
 
-    // Address starts at 4th pos
-    unsigned long addr = strtoul(buf + 3, NULL, 16);
-    unsigned long setid = SUBBIT(addr, cache->b + 1, cache->s);
-    unsigned long tagid = SUBBIT(addr, cache->s + 1, cache->m);
+    counter++;
 
-    int hitFlag = 0;
-    Line* victimLine = NULL;
-
-    Set* pset = cache->set + setid;       // Set Selection
-    for (int i = 0; i < cache->E; i++) {  // Line Matching
-      Line* pline = pset->line + i;
-      if (pline->valid == 1 && pline->tag == tagid) {
-        hitFlag = 1;  // Cache hit
-        break;
-      } else if (pline->valid == 0) {
-        victimLine = pline;
-      }
+    if (opts.verbose) {
+      printf("%s ", buf + 1);
     }
 
-    if (hitFlag) {
-      cache->numHits++;
-    } else if (victimLine != NULL) {  // Empty line exists
-      victimLine->tag = tagid;
-      victimLine->valid = 1;
-      cache->numMisses++;
-    } else {  // Randomly choose victimLine
-      victimLine = pset->line + rand() % cache->E;
-      victimLine->tag = tagid;
-      cache->numMisses++;
+    // Get address
+    unsigned long addr = strtoul(buf + 3, NULL, 16);
+
+    switch (buf[1]) {
+      case 'L':
+      case 'S':
+        load(pc, addr);
+        break;
+      case 'M':
+        load(pc, addr);
+        load(pc, addr);
+        break;
+      default:
+        fprintf(stderr, "Invalid instruction: %c\n", buf[1]);
+    }
+
+    if (opts.verbose) {
+      printf("\n");
     }
   }
 
@@ -170,14 +200,61 @@ void parseFile(char* infile, Cache* cache) {
   }
 }
 
-void freeCache(Cache* cache) {
-  for (int i = 0; i < cache->S; i++) {
-    free(cache->set[i].line->block);
-    free(cache->set[i].line);
-  }
-  free(cache->set);
-}
+void load(Cache* pc, unsigned long addr) {
+  unsigned long setIdx = SUBBIT(addr, pc->s + pc->b, pc->b + 1);
+  unsigned long tag = SUBBIT(addr, pc->m, pc->s + pc->b + 1);
+  // unsigned long blkOffset = SUBBIT(addr, pc->b, 1);
 
+  // Set Selection
+  Set* ps = pc->set[setIdx];
+
+  long hitLineIdx = -1;
+  unsigned long victimLineIdx = 0;
+  unsigned long evictLruCounter = ps->line[victimLineIdx]->lruCounter;
+
+  // Line Matching
+  for (int i = 0; i < pc->E; i++) {
+    Line* pl = ps->line[i];
+    // Cache hit, set line lru counter
+    if (pl->valid && pl->tag == tag) {
+      hitLineIdx = i;
+      ps->line[hitLineIdx]->lruCounter = counter;
+      break;
+    }
+    // Find LRU line
+    else if (pl->lruCounter < evictLruCounter) {
+      evictLruCounter = pl->lruCounter;
+      victimLineIdx = i;
+    }
+  }
+
+  // Cache hit
+  if (hitLineIdx >= 0) {
+    pc->numHits++;
+    if (opts.verbose) {
+      printf("hit ");
+    }
+  }
+  // Cache miss
+  else {
+    pc->numMisses++;
+    if (opts.verbose) {
+      printf("miss ");
+    }
+
+    // LRU line as victim
+    if (ps->line[victimLineIdx]->valid) {
+      pc->numEvictions++;
+      if (opts.verbose) {
+        printf("miss eviction ");
+      }
+    }
+
+    ps->line[victimLineIdx]->valid = true;
+    ps->line[victimLineIdx]->tag = tag;
+    ps->line[victimLineIdx]->lruCounter = counter;
+  }
+}
 ///////////////////////////////////////////////////////////////////////
 //
 // * -h: Optional help flag that prints usage info
@@ -188,16 +265,15 @@ void freeCache(Cache* cache) {
 // * -t <tracefile>: Name of the valgrind trace to replay
 //
 ///////////////////////////////////////////////////////////////////////
-void parseFlag(int argc, char* argv[]) {
+void parseCmdOpts(int argc, char* argv[]) {
   int opt;
   while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1) {
     switch (opt) {
       case 'h':
-        opts.help = 1;
         usage();
         exit(EXIT_SUCCESS);
       case 'v':
-        opts.verbose = 1;
+        opts.verbose = true;
         break;
       case 's':
         opts.s = atoi(optarg);
@@ -209,7 +285,7 @@ void parseFlag(int argc, char* argv[]) {
         opts.b = atoi(optarg);
         break;
       case 't':
-        opts.infile = optarg;
+        opts.traceFile = optarg;
         break;
       default:
         fprintf(stderr, "%s: Missing required command line argument\n",
@@ -224,13 +300,6 @@ void parseFlag(int argc, char* argv[]) {
     usage();
     exit(EXIT_FAILURE);
   }
-}
-
-void printCache(Cache* cache) {
-  printf("(S, E, B, m) = (%d, %d, %d, %d)\n", cache->S, cache->E, cache->B,
-         cache->m);
-  printf("Cache hits = %d\n", cache->numHits);
-  printf("Cache misses = %d\n", cache->numMisses);
 }
 
 void usage(void) {
