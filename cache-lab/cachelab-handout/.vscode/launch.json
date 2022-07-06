@@ -7,16 +7,15 @@
       "request": "launch",
       "program": "/home/huibosa/Repository/csapp-lab/cache-lab/cachelab-handout/csim",
       "args": [
-        // "-v",
-        // "-s",
-        // "8",
-        // "-E",
-        // "1",
-        // "-b",
-        // "4",
-        // "-t",
-        // "./traces/long.trace"
-        "12"
+        "-v",
+        "-s",
+        "8",
+        "-E",
+        "1",
+        "-b",
+        "4",
+        "-t",
+        "./traces/long.trace"
       ],
       "stopAtEntry": false,
       "cwd": "${fileDirname}",
