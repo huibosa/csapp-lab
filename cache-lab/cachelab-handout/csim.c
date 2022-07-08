@@ -218,8 +218,7 @@ void load(Cache* pc, unsigned long addr) {
     // Cache hit, set line lru counter
     if (pl->valid && pl->tag == tag) {
       hitLineIdx = i;
-      ps->line[hitLineIdx]->lruCounter = counter;
-      break;
+      break;  // Don't need to find LRU line
     }
     // Find LRU line
     else if (pl->lruCounter < evictLruCounter) {
@@ -231,6 +230,7 @@ void load(Cache* pc, unsigned long addr) {
   // Cache hit
   if (hitLineIdx >= 0) {
     pc->numHits++;
+    ps->line[hitLineIdx]->lruCounter = counter;  // Update lruCounter
     if (opts.verbose) {
       printf("hit ");
     }
@@ -252,7 +252,7 @@ void load(Cache* pc, unsigned long addr) {
 
     ps->line[victimLineIdx]->valid = true;
     ps->line[victimLineIdx]->tag = tag;
-    ps->line[victimLineIdx]->lruCounter = counter;
+    ps->line[victimLineIdx]->lruCounter = counter;  // Update lruCounter
   }
 }
 ///////////////////////////////////////////////////////////////////////
