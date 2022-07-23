@@ -60,8 +60,7 @@
 0x401181 <+141>:   jmp    0x401188 <phase_6+148>
 
 # $rsi (index [i]): init 0, step 0x4, limit 0x18
-# $rdx: addresses for pre allocated strings
-# $rcx: 
+# $rdx: addresses
 0x401183 <+143>:   mov    $0x6032d0,%edx
 
 0x401188 <+148>:   mov    %rdx,0x20(%rsp,%rsi,2)
@@ -76,19 +75,14 @@
 0x4011a4 <+176>:   mov    $0x6032d0,%edx
 0x4011a9 <+181>:   jmp    0x401176 <phase_6+130>
 
-
-# 0x7fffffffe120: 0x00000006      0x00000005      0x00000004      0x00000003
-# 0x7fffffffe130: 0x00000002      0x00000001      0x00000000      0x00000000
-# 0x7fffffffe140: 0x00603320      0x00000000      0x00603310      0x00000000
-# 0x7fffffffe150: 0x00603300      0x00000000      0x006032f0      0x00000000
-# 0x7fffffffe160: 0x006032e0      0x00000000      0x006032d0      0x00000000
-#
-# 
+# This segment store 6 addr *0x006032d0
+# $rax: store index
+# $rsi: store index upper limit
+# $rbx: store start addr
 0x4011ab <+183>:   mov    0x20(%rsp),%rbx
 0x4011b0 <+188>:   lea    0x28(%rsp),%rax
 0x4011b5 <+193>:   lea    0x50(%rsp),%rsi
 0x4011ba <+198>:   mov    %rbx,%rcx
-
 0x4011bd <+201>:   mov    (%rax),%rdx
 0x4011c0 <+204>:   mov    %rdx,0x8(%rcx)
 0x4011c4 <+208>:   add    $0x8,%rax
@@ -99,7 +93,6 @@
 
 0x4011d2 <+222>:   movq   $0x0,0x8(%rdx)
 0x4011da <+230>:   mov    $0x5,%ebp
-
 0x4011df <+235>:   mov    0x8(%rbx),%rax
 0x4011e3 <+239>:   mov    (%rax),%eax
 0x4011e5 <+241>:   cmp    %eax,(%rbx)

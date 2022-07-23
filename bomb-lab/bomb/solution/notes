@@ -1,0 +1,25 @@
+NUM1 <= 14
+(rsp + 8) = NUM1
+(rsp + 12) = NUM2
+
+$1 = NUM1
+$2 = 0
+$3 = 14
+
+func($1, $2, $3) {
+  rax = $3 - $2
+  ecx = (rax < 0 ? 1 : 0) // Check sign bit
+  rax += ecx
+  rax /= 2
+
+  ecx = 1 * $2 + rax
+  
+  if ecx > $1:
+      rdx = ecx - 1
+      func($1, $2, rdx)
+
+  if (ecx <= $1)
+      rax = 0
+      if (ecx >= $1) 
+          return
+}
