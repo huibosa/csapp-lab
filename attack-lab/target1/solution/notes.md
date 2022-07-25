@@ -52,15 +52,13 @@ ret
 Stack
 
 ```
-+------------------------+
-| STRING                 |
-|                        |
-| INSTRUCTION <<---------+-----+
-|                        |     |
-| RETURN2 -> touch3()    |     |
-|                        |     |
-| RETURN1 ---------------+-----+
-+------------------------+
+STRING  <--+
+           |
+leaq 0x16(%rsp),%rdi  <------+
+                             |
+ADDR2   -> touch3()          |
+                             |
+ADDR1 -----------------------+
 ```
 
 Instructions:
@@ -72,9 +70,33 @@ ret
 
 ## Phase 4
 
-* 0x59b997fa stored in address 0x6044e4
+Stack:
 
 ```
-movq $0x59b997fa,%rdi
-ret
+ADDR3       --> touch2()
+ADDR2       --> movl %eax,%edi
+0x59b997fa
+ADDR1       --> popq %rax
+```
+
+## Phase 5
+
+## Reference
+
+In `farm.d`, there are
+
+```
+89 c7 90    # movl %eax,%edi -> 0x4019c6
+89 c2 90    # movl %eax,%edx
+89 ce 90    # movl %ecx,%esi
+89 e0 90    # movl %exp,%eax
+
+48 89 c7 90 # movq %rax,%rdi
+48 89 e0 90 # movq %rsp,%rax
+
+58 90       # popq %rax      -> 0x4019ab
+
+20 c0       # andb %al,%al
+84 c0       # testb %al,%al
+38 c0       # cmpb %al,%al
 ```
