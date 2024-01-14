@@ -9,13 +9,13 @@
  * NOTE TO STUDENTS: Replace this header comment with your own header
  * comment that gives a high level description of your solution.
  */
-#include "mm.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "memlib.h"
+#include "mm.h"
 
 /*********************************************************
  * NOTE TO STUDENTS: Before you do anything else, please
@@ -45,8 +45,8 @@ team_t team = {
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~0x7)
 
-#define GET(p) (*(uint32_t*)(p))
-#define PUT(p, val) ((*(uint32_t*)(p)) = (val))
+#define GET(p) (*(size_t*)(p))
+#define PUT(p, val) ((*(size_t*)(p)) = (val))
 
 #define PACK(size, alloc) ((size) | (alloc))
 
